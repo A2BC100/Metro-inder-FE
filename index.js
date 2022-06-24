@@ -46,7 +46,7 @@ http.createServer((req,res) => {
     
     let mime = getMIME( resPath );
 
-    res.writeHead( 200,{ 'Content-Type': mime });
+    res.writeHead( 200,{ 'Content-Type': mime,'Access-Control-Allow-Origin':'*' });
     try{
         res.end(fs.readFileSync( '.' + resPath));
     }catch(err){

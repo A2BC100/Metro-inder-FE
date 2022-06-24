@@ -70,6 +70,7 @@ header > h2 {
     width: 100%;
     height: 68px;
     border-bottom: 1px solid rgb(155, 155, 155);
+    overflow: clip;
 }
 .userbox > p {
     position: absolute;
@@ -79,6 +80,8 @@ header > h2 {
     left: 10px;
     top: 8px;
     font-family: "nanum_gothic_yethangul";
+    overflow: clip;
+    min-width: 256px;
 }
 .userbox_input {
     position: absolute;
@@ -87,6 +90,9 @@ header > h2 {
     left: 10px;
     bottom: 10px;
 }
+.userbox_input:focus {
+    outline: none;
+}
 .expendbtn {
     position: relative;
     width: 24px;
@@ -94,4 +100,31 @@ header > h2 {
     left: 100%;
     top: 50%;
     transform: translateY(-50%);
+}
+.timetablebox {
+    position: relative;
+    width: 100%;
+    height: 148px;
+    border-bottom: 1px solid rgb(155, 155, 155);
+    top: -50px;
+    overflow: clip;
+}
+.timetablebox_header {
+    position: relative;
+    width: 480px;
+    height: 64px;
+    text-align: center;
+}
+.timetablebox_title {
+    position: relative;
+    display: inline-block;
+    font-family: "nanum_gothic_yethangul";
+    font-size: 16pt;
+    width: 320px;
+    height: 32px;
+    line-height: 35px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 64px;
+    border: 8px solid;
 }
