@@ -91,7 +91,10 @@ function clearTimeTableBox(){
     }
 }
 
-function appendTimeTableBox( name,color ){
+function appendTimeTableBox( name,color,tostn,dnstn ){
+    let tostn_text = tostn ? tostn : '상행 종착역';
+    let dnstn_text = dnstn ? dnstn : '하행 종착역';
+
     let box = document.createElement('div');
     box.setAttribute('class','timetablebox');
     box.className = 'timetablebox';
@@ -106,10 +109,46 @@ function appendTimeTableBox( name,color ){
     title.style.borderColor = color;
     title.textContent = name;
 
+    let content = document.createElement('div');
+    content.setAttribute('class','timetablebox_content');
+    content.className = 'timetablebox_content';
+
+    let left = document.createElement('div');
+    let right = document.createElement('div');
+
+    let left_header = document.createElement('div');
+    let right_header = document.createElement('div');
+
+    let left_timer = document.createElement('div');
+    let right_timer = document.createElement('div');
+
+    left_timer.textContent = '잠시 후 도착';
+    right_timer.textContent = '잠시 후 도착';
+    left_timer.setAttribute('class','timetablebox_towardtimer');
+    left_timer.className = 'timetablebox_towardtimer';
+    right_timer.setAttribute('class','timetablebox_towardtimer');
+    right_timer.className = 'timetablebox_towardtimer';
+
+    left_header.textContent = tostn_text;
+    right_header.textContent = dnstn_text;
+    left_header.setAttribute('class','timetablebox_subheader');
+    left_header.className = 'timetablebox_subheader';
+    right_header.setAttribute('class','timetablebox_subheader'); 
+    right_header.className = 'timetablebox_subheader';
+
+    left.appendChild( left_header );
+    right.appendChild( right_header );
+    left.appendChild( left_timer );
+    right.appendChild( right_timer );
+
+    content.appendChild( left ); 
+    content.appendChild( right );
+
     let side = document.querySelector('.expendarea');
 
     header.appendChild( title );
     box.appendChild( header );
+    box.appendChild( content );
 
     side.appendChild( box );
 }
@@ -182,7 +221,24 @@ function searchPlaces( val ){
             for(let i = 0; i < window.stationLines.length ; i++){
                 let color = searchStationColorInfo(  window.stationLines[i] );
                 if( color != '' ){
-                    appendTimeTableBox( parseStationName( data[0].place_name ), color );
+                    // 도착시간 가져오기
+                    sendAJAX_GET('/getRealtimeStation?stationName=' + parseStationName( data[0].place_name ),( data,status ) => {
+                        // JSON 문자열을 JSON 객체로 파싱
+                        if( !data ){
+                            return;
+                        }
+                        let parsedData = JSON.parse( data );
+
+                        if( parsedData.updnLine === '상행' ){
+                            // 상행 처리
+                            appendTimeTableBox( parseStationName( data[0].place_name ), color, parsedData.bstatnNm );
+                        }else{
+                            // 하행 처리
+                            appendTimeTableBox( parseStationName( data[0].place_name ), color, null, parsedData.bstatnNm );
+                        }
+
+                        document.querySelector('.timetablebox_towardtimer').textContent = parsedData.barvlDt + "초 후 도착";
+                    });
                 }
             }
         }
@@ -206,14 +262,66 @@ function searchPlaces( val ){
 
         let stationName = parseStationName( data[0].place_name );
         // 서버에서 혼잡도 정보 받아오기
-        sendAJAX_GET('/returnPeopleCount' + stationName,( data,status ) => {
-            // 결과 출력
-            console.log( data );
-        });
-        // 도착시간 가져오기
-        sendAJAX_GET('/getRealtimeStation',(data) => {
-            // 결과 출력
-            console.log( data );
+        sendAJAX_GET('/returnPeopleCount?stationName=' + stationName,( data,status ) => {
+            // JSON 문자열을 JSON 객체로 파싱
+            if( !data ){
+                return;
+            }
+            let parsedData = JSON.parse( data );
+
+            // 값 정규화 ( 그래프 규모 기반 )
+            const CONST_NORM     = 0.000005;
+            const CONST_MAXRANGE = 100.0;
+            parsedData.fiveRide        = (parsedData.fiveRide        * CONST_NORM) * CONST_MAXRANGE;
+            parsedData.sixRide         = (parsedData.sixRide         * CONST_NORM) * CONST_MAXRANGE;
+            parsedData.sevenRide       = (parsedData.sevenRide       * CONST_NORM) * CONST_MAXRANGE;
+            parsedData.eightRide       = (parsedData.eightRide       * CONST_NORM) * CONST_MAXRANGE;
+            parsedData.nineRide        = (parsedData.nineRide        * CONST_NORM) * CONST_MAXRANGE;
+            parsedData.tenRide         = (parsedData.tenRide         * CONST_NORM) * CONST_MAXRANGE;
+            parsedData.elevenRide      = (parsedData.elevenRide      * CONST_NORM) * CONST_MAXRANGE;
+            parsedData.twelveRide      = (parsedData.twelveRide      * CONST_NORM) * CONST_MAXRANGE;
+            parsedData.thirteenRide    = (parsedData.thirteenRide    * CONST_NORM) * CONST_MAXRANGE;
+            parsedData.fourteenRide    = (parsedData.fourteenRide    * CONST_NORM) * CONST_MAXRANGE;
+            parsedData.fifteenRide     = (parsedData.fifteenRide     * CONST_NORM) * CONST_MAXRANGE;
+            parsedData.sixteenRide     = (parsedData.sixteenRide     * CONST_NORM) * CONST_MAXRANGE;
+            parsedData.seventeenRide   = (parsedData.seventeenRide   * CONST_NORM) * CONST_MAXRANGE;
+            parsedData.eighteenRide    = (parsedData.eighteenRide    * CONST_NORM) * CONST_MAXRANGE;
+            parsedData.nineteenRide    = (parsedData.nineteenRide    * CONST_NORM) * CONST_MAXRANGE;
+            parsedData.twentyRide      = (parsedData.twentyRide      * CONST_NORM) * CONST_MAXRANGE;
+            parsedData.twentyoneRide   = (parsedData.twentyoneRide   * CONST_NORM) * CONST_MAXRANGE;
+            parsedData.twentytwoRide   = (parsedData.twentytwoRide   * CONST_NORM) * CONST_MAXRANGE;
+            parsedData.twentythreeRide = (parsedData.twentythreeRide * CONST_NORM) * CONST_MAXRANGE;
+            parsedData.midnightRide    = (parsedData.midnightRide    * CONST_NORM) * CONST_MAXRANGE;
+
+            // 정규화된 데이터 셋으로 그래프 배열 생성
+            let dataArr = [
+                parsedData.fiveRide,
+                parsedData.sixRide,
+                parsedData.sevenRide,
+                parsedData.eightRide,
+                parsedData.nineRide,
+                parsedData.tenRide,
+                parsedData.elevenRide,
+                parsedData.twelveRide,
+                parsedData.thirteenRide,
+                parsedData.fourteenRide,
+                parsedData.fifteenRide,
+                parsedData.sixteenRide,
+                parsedData.seventeenRide,
+                parsedData.eighteenRide,
+                parsedData.nineteenRide,
+                parsedData.twentyRide,
+                parsedData.twentyoneRide,
+                parsedData.twentytwoRide,
+                parsedData.twentythreeRide,
+                parsedData.midnightRide
+            ];
+
+            // 기존의 그래프는 초기화
+            resetGraphBar();
+
+            // 정규화된 데이터 셋을 사용하여 새로운 그래프를 그리기
+            addGraphBar( dataArr );
         });
     }); 
 }

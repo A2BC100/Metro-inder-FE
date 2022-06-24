@@ -158,6 +158,26 @@ header > h2 {
     height: 64px;
     text-align: center;
 }
+.timetablebox_content {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 64px);
+    display: flex;
+}
+.timetablebox_content :first-child {
+    border-right: 1px solid rgb(227,227,227);
+}
+.timetablebox_content > div {
+    position: relative;
+    width: 50%;
+    height: 100%;
+    text-align: center;
+}
+.timetablebox_subheader {
+    font-family: "nanum_gothic_yethangul";
+    display: grid;
+    border: none !important;
+}
 .timetablebox_title {
     position: relative;
     display: inline-block;
