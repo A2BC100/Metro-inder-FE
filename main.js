@@ -13,13 +13,13 @@ window.onload = () => {
 function deflateSide(){
     let side = document.querySelector('.expendarea');
     let header = document.getElementsByTagName('header')[0];
-    side.style.width = '0px';
+    side.style.transform = 'translateX(-480px)';
     header.style.left = '20px';
 }
 function inflateSide(){
     let side = document.querySelector('.expendarea');
     let header = document.getElementsByTagName('header')[0];
-    side.style.width = '480px';
+    side.style.transform = 'translateX(0px)';
     header.style.left = '500px';
 }
 function toggleSide(){
