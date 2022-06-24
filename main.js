@@ -91,9 +91,10 @@ function clearTimeTableBox(){
     }
 }
 
-function appendTimeTableBox( name,color,tostn,dnstn ){
+function appendTimeTableBox( name,color,tostn,dnstn,remain ){
     let tostn_text = tostn ? tostn : '상행 종착역';
     let dnstn_text = dnstn ? dnstn : '하행 종착역';
+    let rmtim_text = remain ? remain : '잠시 후 도착';
 
     let box = document.createElement('div');
     box.setAttribute('class','timetablebox');
@@ -128,6 +129,9 @@ function appendTimeTableBox( name,color,tostn,dnstn ){
     left_timer.className = 'timetablebox_towardtimer';
     right_timer.setAttribute('class','timetablebox_towardtimer');
     right_timer.className = 'timetablebox_towardtimer';
+
+    left_timer.textContent = rmtim_text;
+    right_timer.textContent = rmtim_text;
 
     left_header.textContent = tostn_text;
     right_header.textContent = dnstn_text;
@@ -228,15 +232,17 @@ function searchPlaces( val ){
                         }
                         let parsedData = JSON.parse( recvdata );
 
-                        if( parsedData.realtimeArrivalList.updnLine === '상행' ){
-                            // 상행 처리
-                            appendTimeTableBox( parseStationName( data[0].place_name ), color, parsedData.realtimeArrivalList.bstatnNm );
-                        }else{
-                            // 하행 처리
-                            appendTimeTableBox( parseStationName( data[0].place_name ), color, null, parsedData.realtimeArrivalList.bstatnNm );
+                        for(let i = 0; i < parsedData.length; i++){
+                            if( parsedData[i].statnNm === parseStationName( data[0].place_name ) ){
+                                if( parsedData[i].realtimeArrivalList === '상행' ){
+                                    // 상행 처리
+                                    appendTimeTableBox( parseStationName( data[0].place_name ), color, parsedData[i].bstatnNm,null, barvlDt + '' );
+                                }else{
+                                    // 하행 처리
+                                    appendTimeTableBox( parseStationName( data[0].place_name ), color, null, parsedData[i].bstatnNm, barvlDt + '' );
+                                }
+                            }
                         }
-
-                        document.querySelector('.timetablebox_towardtimer').textContent = parsedData.realtimeArrivalList.barvlDt + "초 후 도착";
                     });
                 }
             }
