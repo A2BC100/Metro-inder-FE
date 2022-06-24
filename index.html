@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="fontloader.css">
+    <link rel="stylesheet" href="main.css">
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=5d8cd5bb091fd36627885e1adddfb8aa&libraries=services"></script>
+    <script type="text/javascript" src="main.js"></script>
+    <title>Metro-inder</title>
+</head>
+<body>
+    <header>
+        <div class="header_btn_shared icon_wrapper"></div>
+        <h2 class="unselectable">Metro-inder</h2>
+        <div class="header_divider"></div>
+        <button class="header_btn_shared marker_on_btn" onclick="setMarkerVisible(true)"></button>
+        <button class="header_btn_shared marker_off_btn" onclick="setMarkerVisible(false)"></button>
+    </header>
+    <div class="mapview">
+        <div class="expendarea">
+            <div class="userbox">
+                <p class="unselectable">역명 검색</p>
+                <input class="userbox_input" type="text" placeholder="인덕원역" onkeydown="if(event.keyCode === 13){searchPlaces(this.value); this.value = '';}">
+            </div>
+            <div class="timetablebox">
+                
+            </div> 
+            <button class="expendbtn" onclick="toggleSide()">></button>
+        </div>
+    </div>
+</body>
+</html>
