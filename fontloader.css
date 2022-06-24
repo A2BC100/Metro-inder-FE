@@ -8,3 +8,8 @@
     font-family: "nanum_gothic_yethangul";
     src: url(./fonts/NanumBarunGothic-YetHangul.ttf);
 }
+
+@font-face {
+    font-family: "subway_font";
+    src: url(./fonts/Subway.ttf);
+}
