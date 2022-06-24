@@ -6,21 +6,18 @@ window.onload = () => {
     }
     
     window.map = new kakao.maps.Map(container, options);
-
-    let data = [50,80,70,24,52,98,72,15,84,62,12,5,98,10,48,80,90,21,19,20];
-    addGraphBar( data );
+    // 초기 상태에서 그래프 숨기기
+    hideGraph();
 };
 function deflateSide(){
-    let side = document.querySelector('.expendarea');
-    let header = document.getElementsByTagName('header')[0];
-    side.style.transform = 'translateX(-480px)';
-    header.style.left = '20px';
+    document.querySelector('.expendbtn_icon_wrapper').style.backgroundImage = 'url(./icons/arrow.svg)';
+    document.querySelector('.expendarea').style.transform = 'translateX(-480px)';
+    document.querySelector('header').style.left = '20px';
 }
 function inflateSide(){
-    let side = document.querySelector('.expendarea');
-    let header = document.getElementsByTagName('header')[0];
-    side.style.transform = 'translateX(0px)';
-    header.style.left = '500px';
+    document.querySelector('.expendbtn_icon_wrapper').style.backgroundImage = 'url(./icons/arrow_reverse.svg)';
+    document.querySelector('.expendarea').style.transform = 'translateX(0px)';
+    document.querySelector('header').style.left = '500px';
 }
 function toggleSide(){
     this.isInflateSide = !this.isInflateSide;
@@ -123,6 +120,19 @@ function parseStationName( name ){
     return ret;
 }
 
+function resetGraphBar(){
+    let data = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    addGraphBar( data );
+}
+
+function showGraph(){
+    document.querySelector('.info_graph').style.display = 'block';
+}
+
+function hideGraph(){
+    document.querySelector('.info_graph').style.display = 'none';
+}
+
 function addGraphBar( list ){
     let canv = document.querySelector(".info_graph");
     let ctx = canv.getContext('2d');
@@ -188,5 +198,24 @@ function searchPlaces( val ){
                 window.marker.setPosition(new kakao.maps.LatLng(data[0].y,data[0].x));
             }
         }
+
+        // 검색을 통하여 노선 검색결과가 나오면, 혼잡도 그래프도 다시 띄우기
+        showGraph();
+        // 혼잡도 그래프 초기화
+        resetGraphBar();
+
+        // 서버에서 혼잡도 정보 받아오기
+        let xhr = new XMLHttpRequest;
+        xhr.open('GET','/returnPeopleCount');
+        xhr.onreadystatechange = (event) => {
+            let { target } = event;
+
+            if( target.readyState === XMLHttpRequest.DONE ){
+                let { status } = target;
+                // 서버 상태 받아오기
+                console.log( status );
+            }
+        }
+        xhr.send();
     });
 }
