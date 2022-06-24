@@ -4,6 +4,13 @@ window.onload = () => {
         center: new kakao.maps.LatLng(33.450701,126.570667),
         level: 3
     }
+
+    window.filterCategories = [
+        '지하철',
+        '전철',
+        '기차',
+        '철도'
+    ];
     
     window.map = new kakao.maps.Map(container, options);
 };
@@ -44,15 +51,22 @@ function setMarkerVisible( visible ){
 
 function searchPlaces( val ){
     let ps = new kakao.maps.services.Places();
-
-    if( val.indexOf('역') < 0 ){
-        alert('역 이름을 검색해주세요');
-        return;
-    }
     
     ps.keywordSearch( val, (data, status, pagination) => {
         let bounds = new kakao.maps.LatLngBounds();
         bounds.extend(new kakao.maps.LatLng(data[0].y,data[0].x));
+
+        if( window.filterCategories ){
+            // 필터를 이용하여 사용자가 검색한 장소가 역(Station)인지? 확인
+            let matchArr = window.filterCategories.filter( item => data[0].category_name.indexOf(item) > -1 );
+            if( matchArr.length == 0 ){
+                // 사용자가 입력한 장소 카테고리가 역(Station)이 아니라면 예외처리
+                alert('역명을 입력해주세요');
+                return;
+            }
+        }else{
+            return;
+        }
 
         if( window.map ){
             window.map.setBounds( bounds );
