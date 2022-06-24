@@ -190,7 +190,6 @@ function searchPlaces( val ){
     let ps = new kakao.maps.services.Places();
 
     ps.keywordSearch( val, (data, status, pagination) => {
-        console.log(data);
         let bounds = new kakao.maps.LatLngBounds();
         bounds.extend(new kakao.maps.LatLng(data[0].y,data[0].x));
 
@@ -222,12 +221,12 @@ function searchPlaces( val ){
                 let color = searchStationColorInfo(  window.stationLines[i] );
                 if( color != '' ){
                     // 도착시간 가져오기
-                    sendAJAX_GET('/getRealtimeStation?stationName=' + parseStationName( data[0].place_name ),( data,status ) => {
+                    sendAJAX_GET('/getRealtimeStation?stationName=' + parseStationName( data[0].place_name ),( recvdata,status ) => {
                         // JSON 문자열을 JSON 객체로 파싱
-                        if( !data ){
+                        if( !recvdata ){
                             return;
                         }
-                        let parsedData = JSON.parse( data );
+                        let parsedData = JSON.parse( recvdata );
 
                         if( parsedData.realtimeArrivalList.updnLine === '상행' ){
                             // 상행 처리
@@ -262,12 +261,12 @@ function searchPlaces( val ){
 
         let stationName = parseStationName( data[0].place_name );
         // 서버에서 혼잡도 정보 받아오기
-        sendAJAX_GET('/returnPeopleCount?stationName=' + stationName,( data,status ) => {
+        sendAJAX_GET('/returnPeopleCount?stationName=' + stationName,( recvdata,status ) => {
             // JSON 문자열을 JSON 객체로 파싱
-            if( !data ){
+            if( !recvdata ){
                 return;
             }
-            let parsedData = JSON.parse( data );
+            let parsedData = JSON.parse( recvdata );
 
             // 값 정규화 ( 그래프 규모 기반 )
             const CONST_NORM     = 0.000005;
