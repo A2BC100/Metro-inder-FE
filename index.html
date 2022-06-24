@@ -21,8 +21,10 @@
     <div class="mapview">
         <div class="expendarea">
             <div class="userbox">
-                <p class="unselectable">역명 검색</p>
-                <input class="userbox_input" type="text" placeholder="인덕원역" onkeydown="if(event.keyCode === 13){searchPlaces(this.value); this.value = '';}">
+                <div class="userbox_input_wrapper">
+                    <button class="userbox_search_btn"></button>
+                    <input class="userbox_input" type="text" placeholder="역명을 입력해주세요. (예: 인덕원역, 안양역)" onkeydown="if(event.keyCode === 13){searchPlaces(this.value); this.value = '';}">
+                </div>
             </div>
             <button class="expendbtn" onclick="toggleSide()">></button>
         </div>

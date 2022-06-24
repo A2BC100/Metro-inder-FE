@@ -41,11 +41,16 @@ function searchStationColorInfo( line ){
     xhr.send();
 
     let metroClrs = JSON.parse( xhr.responseText );
+
+    if( !line ){
+        return '';
+    }
     
     if( line.indexOf("수도권") > -1 && line.indexOf("호선") > -1 ){
         let lineNum = line.match(/\d/g);
         if( lineNum.length > 0 ){
-            return metroClrs['SM'][0][lineNum[0]];
+            let ret = lineNum[0] === '9' ? metroClrs['S9'][0][lineNum[0]] : metroClrs['SM'][0][lineNum[0]];
+            return ret;
         }
     }
 
@@ -56,7 +61,7 @@ function searchStationColorInfo( line ){
         }
     }
 
-    if( line === '경의중앙성' ){
+    if( line === '경의중앙선' ){
         return metroClrs['KR'][0]['1'];
     }
 
@@ -66,6 +71,14 @@ function searchStationColorInfo( line ){
 
     if( line === '경강선' ){
         return metroClrs['KR'][0]['3'];
+    }
+
+    if( line === '공항철도' ){
+        return metroClrs['KA'][0]['A'];
+    }
+
+    if( line === '김포골드라인' ){
+        return metroClrs['GG'][0]['G'];
     }
     
     return '';
