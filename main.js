@@ -229,15 +229,15 @@ function searchPlaces( val ){
                         }
                         let parsedData = JSON.parse( data );
 
-                        if( parsedData.updnLine === '상행' ){
+                        if( parsedData.realtimeArrivalList.updnLine === '상행' ){
                             // 상행 처리
-                            appendTimeTableBox( parseStationName( data[0].place_name ), color, parsedData.bstatnNm );
+                            appendTimeTableBox( parseStationName( data[0].place_name ), color, parsedData.realtimeArrivalList.bstatnNm );
                         }else{
                             // 하행 처리
-                            appendTimeTableBox( parseStationName( data[0].place_name ), color, null, parsedData.bstatnNm );
+                            appendTimeTableBox( parseStationName( data[0].place_name ), color, null, parsedData.realtimeArrivalList.bstatnNm );
                         }
 
-                        document.querySelector('.timetablebox_towardtimer').textContent = parsedData.barvlDt + "초 후 도착";
+                        document.querySelector('.timetablebox_towardtimer').textContent = parsedData.realtimeArrivalList.barvlDt + "초 후 도착";
                     });
                 }
             }
