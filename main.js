@@ -6,6 +6,9 @@ window.onload = () => {
     }
     
     window.map = new kakao.maps.Map(container, options);
+
+    let data = [50,80,70,24,52,98,72,15,84,62,12,5,98,10,48,80,90,21,19,20];
+    addGraphBar( data );
 };
 function deflateSide(){
     let side = document.querySelector('.expendarea');
@@ -118,6 +121,20 @@ function parseStationName( name ){
     let idx = name.indexOf('역');
     let ret = idx < 0 ? name : name.substring(0,idx);
     return ret;
+}
+
+function addGraphBar( list ){
+    let canv = document.querySelector(".info_graph");
+    let ctx = canv.getContext('2d');
+
+    ctx.font = '12px Arial';
+
+    for(let i = 0; i < list.length; i++){
+        ctx.fillStyle = '#70b0ff';
+        ctx.fillRect((i * 24) + 5,210 - list[i],12,5 + list[i]);
+        ctx.fillStyle = '#999999';
+        ctx.fillText( i + 5 > 9 ? (i + 5) + '' : '0' + (i + 5) + '',(i * 24) + 4, 228);
+    }
 }
 
 function searchPlaces( val ){
