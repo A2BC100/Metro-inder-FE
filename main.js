@@ -35,6 +35,43 @@ function setMarkerVisible( visible ){
     window.marker.setVisible( visible );
 }
 
+function searchLineID( lineName ){
+    switch( lineName ){
+        case '수도권1호선':
+            return 1001;
+        case '수도권2호선':
+            return 1002;
+        case '수도권3호선':
+            return 1003;
+        case '수도권4호선':
+            return 1004;
+        case '수도권5호선':
+            return 1005;
+        case '수도권6호선':
+            return 1006;
+        case '수도권7호선':
+            return 1007;
+        case '수도권8호선':
+            return 1008;
+        case '수도권9호선':
+            return 1009;
+        case '수인분당선':
+            return 1075;
+        case '신분당선':
+            return 1077;
+        case '우이신설선':
+            return 1092;
+        case '경의중앙선':
+            return 1163;
+        case '공항철도':
+            return 1165;
+        case '경춘선':
+            return 1167;
+        default:
+            return 1001;
+    }
+}
+
 function searchStationColorInfo( line ){
     let xhr = new XMLHttpRequest;
     xhr.open('GET','./db/metro_colors.json',false);
@@ -180,6 +217,10 @@ function addGraphBar( list ){
     let canv = document.querySelector(".info_graph");
     let ctx = canv.getContext('2d');
 
+    // 기존 캔버스 지우기
+    ctx.clearRect( 0,0,canv.width,canv.height );
+    ctx.beginPath();
+
     ctx.font = '12px Arial';
 
     for(let i = 0; i < list.length; i++){
@@ -221,31 +262,23 @@ function searchPlaces( val ){
         // 추출된 노선 정보를 기반으로 역 시간표 레이아웃을 생성
         if( window.stationLines ){
             clearTimeTableBox();
-            for(let i = 0; i < window.stationLines.length ; i++){
-                let color = searchStationColorInfo(  window.stationLines[i] );
-                if( color != '' ){
-                    // 도착시간 가져오기
-                    sendAJAX_GET('/getRealtimeStation?stationName=' + parseStationName( data[0].place_name ),( recvdata,status ) => {
-                        // JSON 문자열을 JSON 객체로 파싱
-                        if( !recvdata ){
-                            return;
-                        }
-                        let parsedData = JSON.parse( recvdata );
-
-                        for(let i = 0; i < parsedData.length; i++){
-                            if( parsedData[i].statnNm === parseStationName( data[0].place_name ) ){
-                                if( parsedData[i].updnLine === '상행' ){
-                                    // 상행 처리
-                                    appendTimeTableBox( parseStationName( data[0].place_name ), color, parsedData[i].bstatnNm,null, barvlDt + '' );
-                                }else{
-                                    // 하행 처리
-                                    appendTimeTableBox( parseStationName( data[0].place_name ), color, null, parsedData[i].bstatnNm, barvlDt + '' );
-                                }
-                            }
-                        }
-                    });
+            // 도착시간 가져오기
+            sendAJAX_GET('/getRealtimeStation?stationName=' + parseStationName( data[0].place_name ),( recvdata,status ) => {
+                // JSON 문자열을 JSON 객체로 파싱
+                if( !recvdata ){
+                    return;
                 }
-            }
+                let parsedData = JSON.parse( recvdata );
+
+                for(let i = 0; i < parsedData.length; i++){
+                    for(let j = 0; j < window.stationLines.length; j++){
+                        if( parsedData[i].subwayId === searchLineID( window.stationLines[j] ) ){
+                            let color = searchStationColorInfo( window.stationLines[j] );
+                            appendTimeTableBox( parseStationName( data[0].place_name ),color,parsedData[i].bstatnNm,parsedData[i].bstatnNm,parsedData[i].barvlDt + '');
+                        }
+                    }
+                }
+            });
         }
 
         if( window.map ){
