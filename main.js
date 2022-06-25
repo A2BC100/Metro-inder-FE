@@ -234,7 +234,7 @@ function searchPlaces( val ){
 
                         for(let i = 0; i < parsedData.length; i++){
                             if( parsedData[i].statnNm === parseStationName( data[0].place_name ) ){
-                                if( parsedData[i].realtimeArrivalList === '상행' ){
+                                if( parsedData[i].updnLine === '상행' ){
                                     // 상행 처리
                                     appendTimeTableBox( parseStationName( data[0].place_name ), color, parsedData[i].bstatnNm,null, barvlDt + '' );
                                 }else{
