@@ -1,35 +1,97 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="fontloader.css">
-    <link rel="stylesheet" href="main.css">
+    <title>지하철 길안내</title>
+    <meta name="keyword" content="지하철">
+    <meta name="description" content="지하철">
+    <meta name="robots" content="index, follow">
+    <link rel="stylesheet" href="https://use.typekit.net/gvq5elq.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/style.css">
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=5d8cd5bb091fd36627885e1adddfb8aa&libraries=services"></script>
-    <script type="text/javascript" src="main.js"></script>
-    <title>Metro-inder</title>
+    <script type="text/javascript" src="./main.js"></script>
 </head>
 <body>
-    <header>
-        <div class="header_btn_shared icon_wrapper"></div>
-        <h2 class="unselectable">Metro-inder</h2>
-        <div class="header_divider"></div>
-        <button class="header_btn_shared marker_on_btn" onclick="setMarkerVisible(true)"></button>
-        <button class="header_btn_shared marker_off_btn" onclick="setMarkerVisible(false)"></button>
-    </header>
-    <div class="mapview">
-        <div class="expendarea">
-            <div class="userbox">
-                <div class="userbox_input_wrapper">
-                    <button class="userbox_search_btn"></button>
-                    <input class="userbox_input" type="text" placeholder="역명을 입력해주세요. (예: 인덕원역, 안양역)" onkeydown="if(event.keyCode === 13){searchPlaces(this.value); this.value = '';}">
+    <div class="map_box">
+        <div class="map_img" src="" alt="">
+        <button class="information_but" onclick="onToggleInfoBox()">조정</button>
+        <div class="information_box">
+            <div class="search_box search_box1">
+                <div class="search_box_wrap">
+                    <input type="text" placeholder="장소를 입력해 주세요">
+                    <button>검색</button>
                 </div>
             </div>
-            <canvas class="info_graph" width="480px" height="240px">당신의 브라우저가 캔버스를 지원하지 않습니다.</canvas>
-            <button class="expendbtn" onclick="toggleSide()">
-                <div class="expendbtn_icon_wrapper"></div>
-            </button>
+
+            <div class="tit_box">
+                <div style="display: flex;">
+                    <h2>안양역</h2>
+                    <button>안내</button>
+                </div>
+                <p><strong>1호선</strong> 수도권 지하철</p>
+            </div>
+
+            <div class="time_box">
+                <h3>시간별 인기도</h3>
+                <div class="time_box_wrapper">
+                    <canvas class="time_canv" width="800px" height="200px" >당신의 브라우저가 캔버스를 지원하지 않습니다.</canvas>
+                </div>
+            </div>
+
+            <div class="weather_box">
+                <h3>오늘의 날씨</h3>
+                <p> <strong>일직동&#44;</strong> 00월 00일 0요일 00&#58;00</p>
+                <div class="weather_info_box">
+                    <img class="weather_img" src="" alt="">
+                    <dl class="weather_info">
+                        <dt><h2>11℃</h2></dt>
+                        <dd>36℃ / -21℃</dd>
+                        <dd>오전 &#58; 폭염 주의</dd>
+                        <dd>오후 &#58; 한파 주의</dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="timetable_box">
+                <canvas width="478px" height="120px" class="line_box">당신의 브라우저가 캔버스를 지원하지 않습니다.</canvas>
+                <div class="arrive_header">실시간 도착 정보</div>
+                <div class="arrive_col upline">
+                    <div class="arrive_subheader">상행</div>
+                </div>
+                <div class="arrive_col dnline">
+                    <div class="arrive_subheader">하행</div>
+                </div> 
+                <!--<img src="imges/table.png" alt="">-->
+            </div>
+    
+            <footer>
+                <p>만든이 최재학, 이중곤, 양찬영, 강준일</p>
+            </footer>
+        </div>
+        <div class="log_box log_box1">
+            <a class="login login_border" onclick="onLoginClick()">로그인</a>
+            <a>회원가입</a>
+        </div>
+        <div class="log_box log_box2">
+            <a class="login_border login_txt" style="background: url(./imges/home.svg) no-repeat;"></a>
+            <a class="login_border login_txt" style="background: url(./imges/company.svg) no-repeat;"></a>
+            <a><strong>000님</strong> 환영합니다</a>
+        </div>
+        <div class="gps_but cm_but">
+            <a onclick="onGPSClick()">gps</a>
+        </div>
+        <div class="mt_but cm_but">
+            <a onclick="onMapTypeToggle()">global</a>
+        </div>
+        <div class="login_form">
+            <h1>로그인</h1>
+            <button style="background: url('./imges/login_kakao.png'); background-size: 100% 100%; border: none;" onclick="onOAuthClick('kakao')"></button>
+            <button style="background: url('./imges/login_naver.png'); background-size: 100% 100%; border: none;" onclick="onOAuthClick('naver')"></button>
+            <button style="background: url('./imges/login_google.png'); background-size: 100% 100%; border: none;" onclick="onOAuthClick('google')"></button>
+            <button onclick="onCancelLoginClick()">취소</button>
         </div>
     </div>
 </body>

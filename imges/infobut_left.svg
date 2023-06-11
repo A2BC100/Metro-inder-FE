@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 25.4.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="레이어_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+	 y="0px" viewBox="0 0 33 70" style="enable-background:new 0 0 33 70;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#FFFFFF;}
+	.st1{fill:#E9E9E9;}
+	.st2{fill:none;stroke:#A8A8A8;stroke-width:3.333;stroke-linecap:round;stroke-linejoin:round;}
+</style>
+<g id="구성_요소_1_6" transform="translate(2.5 4.5)">
+	<g transform="matrix(1, 0, 0, 1, -2.5, -4.5)">
+		<g id="패스_8-2" transform="translate(2.5 4.5)">
+			<path class="st0" d="M19.71,64.75h-21.5v-69h21.5c5.24,0,9.5,4.26,9.5,9.5v50C29.21,60.49,24.95,64.75,19.71,64.75z"/>
+			<path class="st1" d="M-1.29-3.75v68h21c4.96,0,9-4.04,9-9v-50c0-4.96-4.04-9-9-9H-1.29 M-2.29-4.75h22c5.52,0,10,4.48,10,10v50
+				c0,5.52-4.48,10-10,10h-22V-4.75z"/>
+		</g>
+	</g>
+	<path id="Icon_feather-chevron-left_00000086673132197981521890000001860055745348934796_" class="st2" d="M17.21,40.25l-10-10
+		l10-10"/>
+</g>
+</svg>

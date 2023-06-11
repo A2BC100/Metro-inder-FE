@@ -1,379 +1,340 @@
-window.onload = () => {
-    let container = document.querySelector('.mapview');
+
+window.curUserName = 'Lee.Park';
+
+function deflateSide(){
+    document.querySelector('.information_box').style.transform = 'translateX(-494px)';
+    document.querySelector('.information_but').style.left = '0px';
+    document.querySelector('.information_but').style.background = 'url(../imges/infobut_right.svg) no-repeat';
+}
+
+function inflateSide(){
+    document.querySelector('.information_box').style.transform = 'translateX(0px)';
+    document.querySelector('.information_but').style.left = '494px';
+    document.querySelector('.information_but').style.background = 'url(../imges/infobut_left.svg) no-repeat';
+}
+
+function onOAuthClick( service ){
+    let left = (window.innerWidth * 0.5) - 240;
+    let top = (window.innerHeight * 0.5) - 320;
+    let option = 'left=' + left + ',top=' + top + ', width=480, height=640, resizable=no, scrollbars=no, status=no;';
+	window.open('http://metroinder.co.kr:8090/oauth2/authorization/' + service,"", option);
+}
+
+function onToggleInfoBox(){
+    window.isExpend = !window.isExpend;
+    if( window.isExpend )
+        deflateSide();
+    else
+        inflateSide();
+}
+
+function onLoginClick(){
+    //document.querySelector('.log_box1').style.display = 'none';
+    //document.querySelector('.log_box2').style.display = 'block';
+    //document.querySelector('.log_box2 strong').textContent = window.curUserName + '님';
+    document.querySelector('.login_form').style.display = 'block';
+}
+
+function onCancelLoginClick(){
+    document.querySelector('.login_form').style.display = 'none';
+}
+
+async function onGPSClick(){
+    let coords = await getCurrentLocation();
+
+    if( window.map ){
+        window.map.setCenter(new kakao.maps.LatLng(coords.latitude, coords.longitude));
+        window.map.setLevel(3);
+    }
+}
+
+function onMapTypeToggle(){
+    if( !window.map )
+        return;
+    this.mapTypeState = !this.mapTypeState;
+
+    if( !mapTypeState ){
+        window.map.setMapTypeId(kakao.maps.MapTypeId.ROADMAP);
+        document.querySelector('.mt_but').style.background = 'url(../imges/Globe.svg) no-repeat';
+    }else{
+        window.map.setMapTypeId(kakao.maps.MapTypeId.HYBRID);
+        document.querySelector('.mt_but').style.background = 'url(../imges/map.svg) no-repeat';
+    }
+}
+
+function getCurrentLocation(){
+    return new Promise((res) => {
+        navigator.geolocation.getCurrentPosition((pos) => {
+            res(pos.coords);
+        }, (err) => {
+            let coords = [];
+            coords.latitude = 33.450701;
+            coords.longitude = 126.570667;
+            res( coords );
+        });
+    });
+}
+
+function searchPlaces( keyword ){
+    let places = new kakao.maps.services.Places();
+
+    return new Promise ((res) => {
+        places.keywordSearch( keyword, (result, status) => {
+            if( status == kakao.maps.services.Status.OK ){
+                res( result );
+            }
+        });
+    });
+}
+
+function genRandArr( maxlimit, arrcnt ){
+    let randarr = new Array;
+    
+    for(let i = 0; i < arrcnt; i++)
+        randarr.push( Math.round( Math.random() * maxlimit ) );
+
+    return randarr;
+}
+
+function drawLineBox( canv, color, name ){
+    if( !canv )
+        return;
+
+    let ctx = canv.getContext('2d');
+    // 기존 화면 지우기
+    ctx.clearRect(0,0,canv.width,canv.height);
+    // 좌우측 직선 그리기
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineCap = 'round';
+    ctx.lineWidth = 6;
+    ctx.moveTo(10,40);
+    ctx.lineTo(128,40);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo( canv.width - 128, 40 );
+    ctx.lineTo( canv.width - 10, 40 );
+    ctx.stroke();
+
+    // 곡선 구간 그리기
+    ctx.beginPath();
+    ctx.arc( 158, 40, 28, Math.PI * 0.5, Math.PI * 1.5);
+    ctx.stroke();
+
+    // 곡선 구간 그리기
+    ctx.beginPath();
+    ctx.arc( canv.width - 158, 40, 28, Math.PI * -0.5, Math.PI * -1.5);
+    ctx.stroke();
+
+    // 블록 직선 그리기
+    ctx.beginPath();
+    ctx.moveTo( 158, 12 );
+    ctx.lineTo( canv.width - 158, 12 );
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo( 158, 68 );
+    ctx.lineTo( canv.width - 158, 68 );
+    ctx.stroke();
+
+    // 역명 그리기
+    if( name ){
+        ctx.font = '20px Arial';
+        ctx.fillText( name, (canv.width * 0.5) - (10 * name.length), (canv.height * 0.5) - 12 );
+    }
+}
+
+function drawTimeBox( canv,arr ){
+    if( !canv )
+        return;
+    if( !arr )
+        return;
+        
+    let base_y = canv.clientHeight - 64;
+
+    let ctx = canv.getContext('2d');
+    // 기존 화면 지우기
+    ctx.clearRect(0,0,canv.width,canv.height);
+    // 기준 선 그리기
+    ctx.strokeStyle = '#A8A8A8';
+    ctx.moveTo(0,base_y);
+    ctx.lineTo(1024,base_y);
+    ctx.stroke();
+
+    ctx.font = '12px arial';
+    ctx.fillStyle = 'gray';
+
+    let prvX, prvY;
+    let gap = 43;
+
+    for(let i = 0; i < 19; i++){
+        if( !arr[i + 5] )
+            continue;
+
+        let h_rate = (arr[i + 5] / 100) * 180;
+
+        if( prvX && prvY ){
+            ctx.moveTo( prvX, prvY );
+            ctx.lineTo( 8 + (i * gap) + 5, (base_y - 8) - h_rate );
+            ctx.stroke();
+        }
+
+        ctx.fillText((i + 5) + '', 8 + (i * gap), base_y + 18);
+        ctx.beginPath();
+        ctx.strokeStyle = '#62cdf9';
+        ctx.arc(8 + (i * gap) + 6, (base_y - 8) - h_rate, 2.5, 0, 2 * Math.PI);
+        ctx.stroke();
+
+        prvX = 8 + (i * gap) + 8;
+        prvY = (base_y - 8) - h_rate;
+    }
+}
+
+function getLineColorFromDB( line_name ){
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', '/db/metro_colors.json', false); 
+    xhr.send();
+
+    line_name = line_name.trim();
+
+    let tbl = JSON.parse( xhr.responseText );
+    if( line_name == '수인분당선' )
+        return tbl['KR'][0]['2'];
+    if( new RegExp('수도권[0-9]호선').test( line_name ) )
+        return tbl['SM'][0][ line_name.match(/[0-9]/g)[0] ];
+}
+
+function getPeopleCount( station_name ){
+    return new Promise((res,rej) => {
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', '/returnPeopleCount?stationName=' + station_name, true);
+        xhr.send();
+        
+        xhr.onreadystatechange = () => {
+            if( xhr.readyState == XMLHttpRequest.DONE )
+                res(JSON.parse( xhr.responseText ));
+        }
+    });
+}
+
+function getRealtimeStation( station_name ){
+	return new Promise((res,rej) => {
+        let xhr = new XMLHttpRequest();
+	    xhr.open('GET', '/api/realtime/station?stationName=' + station_name, true);
+	    xhr.send();
+        
+        xhr.onreadystatechange = () => {
+            if( xhr.readyState == XMLHttpRequest.DONE ){
+                let obj = JSON.parse( xhr.responseText );
+	            res( obj ? obj.realtimeArrivalList ? obj.realtimeArrivalList : new Array : new Array );
+            }
+        }
+    });
+}
+
+window.onload = async() => {
+    let container = document.querySelector('.map_img');
+    let coords = await getCurrentLocation();
+
+    getPeopleCount( '안양' );
+
     let options = {
-        center: new kakao.maps.LatLng(33.450701,126.570667),
+        center: new kakao.maps.LatLng(coords.latitude, coords.longitude),
+        mapTypeId: kakao.maps.MapTypeId.ROADMAP,
         level: 3
     }
     
     window.map = new kakao.maps.Map(container, options);
-    // 초기 상태에서 그래프 숨기기
-    hideGraph();
-};
-function deflateSide(){
-    document.querySelector('.expendbtn_icon_wrapper').style.backgroundImage = 'url(./icons/arrow.svg)';
-    document.querySelector('.expendarea').style.transform = 'translateX(-480px)';
-    document.querySelector('header').style.left = '20px';
-}
-function inflateSide(){
-    document.querySelector('.expendbtn_icon_wrapper').style.backgroundImage = 'url(./icons/arrow_reverse.svg)';
-    document.querySelector('.expendarea').style.transform = 'translateX(0px)';
-    document.querySelector('header').style.left = '500px';
-}
-function toggleSide(){
-    this.isInflateSide = !this.isInflateSide;
-    if( this.isInflateSide ){
-        deflateSide();
-    }else{
-        inflateSide();
-    }
-}
-function setMarkerVisible( visible ){
-    if( !window.marker ){
-        return;
+    window.marker = new kakao.maps.Marker({ map: window.map });
+
+    // 지도 정보 표시 레이블 좌측에서 우측으로 이동
+    let subdivs = document.querySelectorAll('.map_img > div');
+    if( subdivs.length > 0 ){
+        subdivs[ subdivs.length - 2 ].style.left = '';
+        subdivs[ subdivs.length - 2 ].style.right = '0px';
     }
 
-    window.marker.setVisible( visible );
-}
+    let inputStn = document.querySelector('.search_box_wrap > input');
+    inputStn.onkeypress = async(e) => {
+        if( e.keyCode == 13 ){
+            let place = await searchPlaces( inputStn.value );
+            place     = place.find( stn => stn.category_group_name == '지하철역' );
 
-function searchLineID( lineName ){
-    switch( lineName ){
-        case '수도권1호선':
-            return 1001;
-        case '수도권2호선':
-            return 1002;
-        case '수도권3호선':
-            return 1003;
-        case '수도권4호선':
-            return 1004;
-        case '수도권5호선':
-            return 1005;
-        case '수도권6호선':
-            return 1006;
-        case '수도권7호선':
-            return 1007;
-        case '수도권8호선':
-            return 1008;
-        case '수도권9호선':
-            return 1009;
-        case '수인분당선':
-            return 1075;
-        case '신분당선':
-            return 1077;
-        case '우이신설선':
-            return 1092;
-        case '경의중앙선':
-            return 1163;
-        case '공항철도':
-            return 1165;
-        case '경춘선':
-            return 1167;
-        default:
-            return 1001;
-    }
-}
+            let lat   = place.y;
+            let lon   = place.x;
+            let token = place.place_name.split(' ');
+            let local = place.category_name.split('>');
 
-function searchStationColorInfo( line ){
-    let xhr = new XMLHttpRequest;
-    xhr.open('GET','./db/metro_colors.json',false);
-    xhr.send();
+            // 노선 색상 정보 가져오기
+            let line_clr = getLineColorFromDB( local.splice(-1)[0] );
+            drawLineBox( document.querySelector('.line_box'), line_clr, token[0] );
+            
+            // 역 정보가 정상적인 형태(역이름 호선)로 파싱이 되었다면?
+            if( token.length > 1 ){
+                document.querySelector('.search_box').setAttribute('class', 'search_box search_box2');
+                document.querySelector('.tit_box').style.display = 'block';
+                document.querySelector('.time_box').style.display = 'block';
+                document.querySelector('.timetable_box').style.display = 'block';
+                document.querySelector('.tit_box > div > h2').textContent = token[0];
+                document.querySelector('.tit_box > p > strong').textContent = token[1];
+                document.querySelector('.weather_box').style.display = 'none';
+                
+                getRealtimeStation( token[0].substring(0, token[0].length - 1) ).then((obj) => {
+                    let upcnt = 0;
+                    let dncnt = 0;
 
-    let metroClrs = JSON.parse( xhr.responseText );
+					document.querySelector('.upline').textContent = '';
+					document.querySelector('.dnline').textContent = '';
+  
+                    for(let line of obj){
+                        let updn = document.createElement('div');
 
-    if( !line ){
-        return '';
-    }
-    
-    if( line.indexOf("수도권") > -1 && line.indexOf("호선") > -1 ){
-        let lineNum = line.match(/\d/g);
-        if( lineNum.length > 0 ){
-            let ret = lineNum[0] === '9' ? metroClrs['S9'][0][lineNum[0]] : metroClrs['SM'][0][lineNum[0]];
-            return ret;
-        }
-    }
-
-    if( line.indexOf("인천") > -1 && line.indexOf("호선") > -1 ){
-        let lineNum = line.match(/\d/g);
-        if( lineNum.length > 0 ){
-            return metroClrs['IM'][0][lineNum[0]];
-        }
-    }
-
-    if( line === '경의중앙선' ){
-        return metroClrs['KR'][0]['1'];
-    }
-
-    if( line === '수인분당선' ){
-        return metroClrs['KR'][0]['2'];
-    }
-
-    if( line === '경강선' ){
-        return metroClrs['KR'][0]['3'];
-    }
-
-    if( line === '공항철도' ){
-        return metroClrs['KA'][0]['A'];
-    }
-
-    if( line === '김포골드라인' ){
-        return metroClrs['GG'][0]['G'];
-    }
-    
-    return '';
-}
-
-function clearTimeTableBox(){
-    let boxs = document.getElementsByClassName('timetablebox');
-    for(let i = boxs.length - 1; i > -1 ; i--){
-        boxs[i].remove();
-    }
-}
-
-function appendTimeTableBox( name,color,tostn,dnstn,remain ){
-    let tostn_text = tostn ? tostn : '상행 종착역';
-    let dnstn_text = dnstn ? dnstn : '하행 종착역';
-    let rmtim_text = remain ? remain : '잠시 후 도착';
-
-    let box = document.createElement('div');
-    box.setAttribute('class','timetablebox');
-    box.className = 'timetablebox';
-
-    let header = document.createElement('div');
-    header.setAttribute('class','timetablebox_header');
-    header.className = 'timetablebox_header';
-
-    let title = document.createElement('div');
-    title.setAttribute('class','timetablebox_title');
-    title.className = 'timetablebox_title unselectable';
-    title.style.borderColor = color;
-    title.textContent = name;
-
-    let content = document.createElement('div');
-    content.setAttribute('class','timetablebox_content');
-    content.className = 'timetablebox_content';
-
-    let left = document.createElement('div');
-    let right = document.createElement('div');
-
-    let left_header = document.createElement('div');
-    let right_header = document.createElement('div');
-
-    let left_timer = document.createElement('div');
-    let right_timer = document.createElement('div');
-
-    left_timer.textContent = '잠시 후 도착';
-    right_timer.textContent = '잠시 후 도착';
-    left_timer.setAttribute('class','timetablebox_towardtimer');
-    left_timer.className = 'timetablebox_towardtimer';
-    right_timer.setAttribute('class','timetablebox_towardtimer');
-    right_timer.className = 'timetablebox_towardtimer';
-
-    left_timer.textContent = rmtim_text;
-    right_timer.textContent = rmtim_text;
-
-    left_header.textContent = tostn_text;
-    right_header.textContent = dnstn_text;
-    left_header.setAttribute('class','timetablebox_subheader');
-    left_header.className = 'timetablebox_subheader';
-    right_header.setAttribute('class','timetablebox_subheader'); 
-    right_header.className = 'timetablebox_subheader';
-
-    left.appendChild( left_header );
-    right.appendChild( right_header );
-    left.appendChild( left_timer );
-    right.appendChild( right_timer );
-
-    content.appendChild( left ); 
-    content.appendChild( right );
-
-    let side = document.querySelector('.expendarea');
-
-    header.appendChild( title );
-    box.appendChild( header );
-    box.appendChild( content );
-
-    side.appendChild( box );
-}
-
-function parseStationName( name ){
-    let idx = name.indexOf('역');
-    let ret = idx < 0 ? name : name.substring(0,idx);
-    return ret;
-}
-
-function resetGraphBar(){
-    let data = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    addGraphBar( data );
-}
-
-function showGraph(){
-    document.querySelector('.info_graph').style.display = 'block';
-}
-
-function hideGraph(){
-    document.querySelector('.info_graph').style.display = 'none';
-}
-
-function addGraphBar( list ){
-    let canv = document.querySelector(".info_graph");
-    let ctx = canv.getContext('2d');
-
-    // 기존 캔버스 지우기
-    ctx.clearRect( 0,0,canv.width,canv.height );
-    ctx.beginPath();
-
-    ctx.font = '12px Arial';
-
-    for(let i = 0; i < list.length; i++){
-        ctx.fillStyle = '#70b0ff';
-        ctx.fillRect((i * 24) + 5,210 - list[i],12,5 + list[i]);
-        ctx.fillStyle = '#999999';
-        ctx.fillText( i + 5 > 9 ? (i + 5) + '' : '0' + (i + 5) + '',(i * 24) + 4, 228);
-    }
-}
-
-function searchPlaces( val ){
-    let ps = new kakao.maps.services.Places();
-
-    ps.keywordSearch( val, (data, status, pagination) => {
-        let bounds = new kakao.maps.LatLngBounds();
-        bounds.extend(new kakao.maps.LatLng(data[0].y,data[0].x));
-
-        // 역이 아닌 장소를 검색했을 때, 예외처리
-        if( data[0].category_name.indexOf('지하철,전철') < 0 && data[0].category_name.indexOf('기차,철도') < 0 ){
-            alert('역명만 검색해주세요!');
-            return;
-        }
-
-        // 장소 정보에서 역 지하철 노선 정보를 추출
-        let lines = data.map( item => item.category_name.split('>').map( subitem => subitem.trim() ) );
-        window.stationLines = [];
-
-        for(let i = 0; i < lines.length; i++){
-            if( lines[i].length > 1 ){
-                if( lines[i][1] === '지하철,전철' ){
-                    // 중복 역 노선 입력 방지
-                    if( window.stationLines.indexOf( lines[i][2] ) < 0 ){
-                        window.stationLines.push( lines[i][2] );
-                    }
-                }
-            }
-        }
-
-        // 추출된 노선 정보를 기반으로 역 시간표 레이아웃을 생성
-        if( window.stationLines ){
-            clearTimeTableBox();
-            // 도착시간 가져오기
-            sendAJAX_GET('/getRealtimeStation?stationName=' + parseStationName( data[0].place_name ),( recvdata,status ) => {
-                // JSON 문자열을 JSON 객체로 파싱
-                if( !recvdata ){
-                    return;
-                }
-                let parsedData = JSON.parse( recvdata );
-
-                for(let i = 0; i < parsedData.length; i++){
-                    for(let j = 0; j < window.stationLines.length; j++){
-                        if( parsedData[i].subwayId === searchLineID( window.stationLines[j] ) ){
-                            let color = searchStationColorInfo( window.stationLines[j] );
-                            appendTimeTableBox( parseStationName( data[0].place_name ),color,parsedData[i].bstatnNm,parsedData[i].bstatnNm,parsedData[i].barvlDt + '');
+                        if( line.updnLine == '상행' ){
+                            upcnt = upcnt + 1;
+                            updn.textContent = line.arvlMsg2;
+                            document.querySelector('.upline').appendChild(updn);
+                        }else if( line.updnLine == '하행' ){
+                            dncnt = dncnt + 1;
+                            updn.textContent = line.arvlMsg2;
+                            document.querySelector('.dnline').appendChild(updn);
                         }
                     }
+
+                    if( upcnt > dncnt ){
+                        for(let i = 0; i < upcnt - dncnt; i++){
+                            let div = document.createElement('div');
+                            div.textContent = 'N/A';
+                            document.querySelector('.dnline').appendChild(div);
+                        }
+                    }else if( upcnt < dncnt ){
+						for(let i = 0; i < dncnt - upcnt; i++){
+                      		let div = document.createElement('div');
+                      		div.textContent = 'N/A';
+                     		document.querySelector('.upline').appendChild(div);
+                		}
+					}
+                });
+                // 혼잡도 그래프 그리기
+                getPeopleCount( token[0].substring(0, token[0].length - 1) ).then((arr) => {
+                    drawTimeBox( document.querySelector('.time_canv'), arr );
+                });
+            }
+
+            // 검색한 대상 역에 해당하는 대표 이미지를 찾아와서 그림
+            let stnImg = document.querySelector('.search_box2');
+            if( stnImg ){
+                stnImg.style.background = 'url(./imges/station/' + token[0] + '.jpg)';
+                stnImg.style.backgroundSize = '100% 100%';
+            }
+
+
+            if( window.map ){
+                window.map.setCenter( new kakao.maps.LatLng(lat, lon) );
+                if( window.marker ){
+                    window.marker.setPosition( new kakao.maps.LatLng(lat, lon) );
                 }
-            });
-        }
-
-        if( window.map ){
-            window.map.setBounds( bounds );
-            if( !window.marker ){
-                window.marker = new kakao.maps.Marker({
-                    map: window.map,
-                    position: new kakao.maps.LatLng(data[0].y,data[0].x)
-                })
-            }else{
-                window.marker.setPosition(new kakao.maps.LatLng(data[0].y,data[0].x));
             }
         }
-
-        // 검색을 통하여 노선 검색결과가 나오면, 혼잡도 그래프도 다시 띄우기
-        showGraph();
-        // 혼잡도 그래프 초기화
-        resetGraphBar();
-
-        let stationName = parseStationName( data[0].place_name );
-        // 서버에서 혼잡도 정보 받아오기
-        sendAJAX_GET('/returnPeopleCount?stationName=' + stationName,( recvdata,status ) => {
-            // JSON 문자열을 JSON 객체로 파싱
-            if( !recvdata ){
-                return;
-            }
-            let parsedData = JSON.parse( recvdata );
-
-            // 값 정규화 ( 그래프 규모 기반 )
-            const CONST_NORM     = 0.000005;
-            const CONST_MAXRANGE = 100.0;
-            parsedData.fiveRide        = (parsedData.fiveRide        * CONST_NORM) * CONST_MAXRANGE;
-            parsedData.sixRide         = (parsedData.sixRide         * CONST_NORM) * CONST_MAXRANGE;
-            parsedData.sevenRide       = (parsedData.sevenRide       * CONST_NORM) * CONST_MAXRANGE;
-            parsedData.eightRide       = (parsedData.eightRide       * CONST_NORM) * CONST_MAXRANGE;
-            parsedData.nineRide        = (parsedData.nineRide        * CONST_NORM) * CONST_MAXRANGE;
-            parsedData.tenRide         = (parsedData.tenRide         * CONST_NORM) * CONST_MAXRANGE;
-            parsedData.elevenRide      = (parsedData.elevenRide      * CONST_NORM) * CONST_MAXRANGE;
-            parsedData.twelveRide      = (parsedData.twelveRide      * CONST_NORM) * CONST_MAXRANGE;
-            parsedData.thirteenRide    = (parsedData.thirteenRide    * CONST_NORM) * CONST_MAXRANGE;
-            parsedData.fourteenRide    = (parsedData.fourteenRide    * CONST_NORM) * CONST_MAXRANGE;
-            parsedData.fifteenRide     = (parsedData.fifteenRide     * CONST_NORM) * CONST_MAXRANGE;
-            parsedData.sixteenRide     = (parsedData.sixteenRide     * CONST_NORM) * CONST_MAXRANGE;
-            parsedData.seventeenRide   = (parsedData.seventeenRide   * CONST_NORM) * CONST_MAXRANGE;
-            parsedData.eighteenRide    = (parsedData.eighteenRide    * CONST_NORM) * CONST_MAXRANGE;
-            parsedData.nineteenRide    = (parsedData.nineteenRide    * CONST_NORM) * CONST_MAXRANGE;
-            parsedData.twentyRide      = (parsedData.twentyRide      * CONST_NORM) * CONST_MAXRANGE;
-            parsedData.twentyoneRide   = (parsedData.twentyoneRide   * CONST_NORM) * CONST_MAXRANGE;
-            parsedData.twentytwoRide   = (parsedData.twentytwoRide   * CONST_NORM) * CONST_MAXRANGE;
-            parsedData.twentythreeRide = (parsedData.twentythreeRide * CONST_NORM) * CONST_MAXRANGE;
-            parsedData.midnightRide    = (parsedData.midnightRide    * CONST_NORM) * CONST_MAXRANGE;
-
-            // 정규화된 데이터 셋으로 그래프 배열 생성
-            let dataArr = [
-                parsedData.fiveRide,
-                parsedData.sixRide,
-                parsedData.sevenRide,
-                parsedData.eightRide,
-                parsedData.nineRide,
-                parsedData.tenRide,
-                parsedData.elevenRide,
-                parsedData.twelveRide,
-                parsedData.thirteenRide,
-                parsedData.fourteenRide,
-                parsedData.fifteenRide,
-                parsedData.sixteenRide,
-                parsedData.seventeenRide,
-                parsedData.eighteenRide,
-                parsedData.nineteenRide,
-                parsedData.twentyRide,
-                parsedData.twentyoneRide,
-                parsedData.twentytwoRide,
-                parsedData.twentythreeRide,
-                parsedData.midnightRide
-            ];
-
-            // 기존의 그래프는 초기화
-            resetGraphBar();
-
-            // 정규화된 데이터 셋을 사용하여 새로운 그래프를 그리기
-            addGraphBar( dataArr );
-        });
-    }); 
-}
-
-function sendAJAX_GET( url,callback ){
-    let xhr = new XMLHttpRequest;
-    xhr.open('GET',url);
-    xhr.onreadystatechange = (event) => {
-        let { target } = event;
-
-        if( target.readyState === XMLHttpRequest.DONE ){
-            let { status } = target;
-            callback( xhr.responseText, status );
-        }
-    }
-    xhr.send();
-}
+    };
+};
