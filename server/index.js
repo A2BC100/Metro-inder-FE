@@ -1,6 +1,6 @@
 
 const fs = require('fs');
-const https = require('https');
+// const https = require('https');
 const http = require('http');
 const MIME_TABLE = [
     {"html":"text/html"},
@@ -13,9 +13,9 @@ const MIME_TABLE = [
     {"ttf":"application/x-font-ttf"},
     {"otf":"application/x-font-opentype"}
 ]
-const KEY_CERT = {key:fs.readFileSync('/etc/letsencrypt/live/metroinder.co.kr/privkey.pem'), cert:fs.readFileSync('/etc/letsencrypt/live/metroinder.co.kr/fullchain.pem')};
+// const KEY_CERT = {key:fs.readFileSync('/etc/letsencrypt/live/metroinder.co.kr/privkey.pem'), cert:fs.readFileSync('/etc/letsencrypt/live/metroinder.co.kr/fullchain.pem')};
 
-process.on('uncaughtException',(err) => {console.log(err)});
+// process.on('uncaughtException',(err) => {console.log(err)});
 
 function getLastExtension( fullpath ){
     let lastIdx = -1;
@@ -43,9 +43,9 @@ function getMIME( url ){
     return target;
 }
 
-https.createServer(KEY_CERT, (req,res) => {
+ http.createServer(/*KEY_CERT,*/ (req,res) => {
     let resPath = '';
-    req.url === '/' ? resPath = '/index.html' : resPath = req.url;
+    req.url === '/' ? resPath = './client/src/index.html' : resPath = req.url;
 	
     if( req.url.startsWith('/login/oauth2/code/kakao') ){
 		let code = req.url.split(/code=(.*?)&/g);
