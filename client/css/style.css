@@ -75,7 +75,7 @@ strong{
     translate: 0 -50%;
     width: 32px;
     height: 70px;
-    background: url(../imges/infobut_left.svg) no-repeat;
+    background: url(../resources/imges/infobut_left.svg) no-repeat;
     border: #E9E9E9;
     border-radius: 0 10px 10px 0;
     text-indent: -999em;
@@ -103,7 +103,7 @@ strong{
     translate: 0 -50% ;
     width: 28px;
     height: 28px;
-    background: url(../imges/search.svg) no-repeat;
+    background: url(../resources/icons/search.svg) no-repeat;
     text-indent: -999em;
     overflow: hidden;
     border: none;
@@ -208,7 +208,7 @@ strong{
     height: 40px;
     border-right:1px solid #A8A8A8;
     border-radius: 50%;
-    background: url(../imges/gps.svg) no-repeat;
+    background: url(../resources/imges/gps.svg) no-repeat;
     z-index: 64;
 }
 .cm_but a{
@@ -221,7 +221,7 @@ strong{
 /*---------------mt_but----------------*/
 .mt_but{
     bottom: 100px;
-    background: url(../imges/Globe.svg) no-repeat;
+    background: url(../resources/imges/Globe.svg) no-repeat;
 }
 /*-----------------tit_box----------------*/
 .tit_box{
@@ -246,7 +246,7 @@ strong{
 }
 
 .tit_box button{
-    background: url(../imges/nav.svg) no-repeat;
+    background: url(../resources/imges/nav.svg) no-repeat;
     border: none;
     text-indent: -999em;
     overflow: hidden;

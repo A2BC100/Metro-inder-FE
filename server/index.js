@@ -45,7 +45,7 @@ function getMIME( url ){
 
  http.createServer(/*KEY_CERT,*/ (req,res) => {
     let resPath = '';
-    req.url === '/' ? resPath = './client/src/index.html' : './client' + req.url;
+    req.url === '/' ? resPath = '../client/src/index.html' : resPath = '../client' + req.url;
 	
     if( req.url.startsWith('/login/oauth2/code/kakao') ){
 		let code = req.url.split(/code=(.*?)&/g);
@@ -102,7 +102,7 @@ function getMIME( url ){
     let mime = getMIME( resPath );
 
     res.writeHead( 200,{ 'Content-Type': mime,'Access-Control-Allow-Origin':'*' });
-    fs.readFile('.' + resPath, (err, data) => {
+    fs.readFile(resPath, (err, data) => {
         if( err ){
             console.log(err);
             res.end('');

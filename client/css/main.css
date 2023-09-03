@@ -99,7 +99,7 @@ header > h2 {
     top: 2px;
     left: 2px;
     border: none;
-    background: url(./icons/search.svg);
+    background: url(../resources/icons/search.svg);
     background-size: 100% 100%;
     transform: scale(0.6);
 }
