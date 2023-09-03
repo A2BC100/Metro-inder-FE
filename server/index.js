@@ -45,7 +45,7 @@ function getMIME( url ){
 
  http.createServer(/*KEY_CERT,*/ (req,res) => {
     let resPath = '';
-    req.url === '/' ? resPath = './client/src/index.html' : resPath = req.url;
+    req.url === '/' ? resPath = './client/src/index.html' : './client' + req.url;
 	
     if( req.url.startsWith('/login/oauth2/code/kakao') ){
 		let code = req.url.split(/code=(.*?)&/g);
