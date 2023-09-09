@@ -4,13 +4,13 @@ window.curUserName = 'Lee.Park';
 function deflateSide(){
     document.querySelector('.information_box').style.transform = 'translateX(-494px)';
     document.querySelector('.information_but').style.left = '0px';
-    document.querySelector('.information_but').style.background = 'url(../imges/infobut_right.svg) no-repeat';
+    document.querySelector('.information_but').style.background = 'url(../resources/imges/infobut_right.svg) no-repeat';
 }
 
 function inflateSide(){
     document.querySelector('.information_box').style.transform = 'translateX(0px)';
     document.querySelector('.information_but').style.left = '494px';
-    document.querySelector('.information_but').style.background = 'url(../imges/infobut_left.svg) no-repeat';
+    document.querySelector('.information_but').style.background = 'url(../resources/imges/infobut_left.svg) no-repeat';
 }
 
 function onOAuthClick( service ){

@@ -60,7 +60,7 @@ function getMIME( url ){
     }
 
     if( req.url.startsWith('/returnPeopleCount') ){
-        http.request({ host: 'metroinder.co.kr', port: 8090, method: 'GET', path: req.url },(res_sub) => {
+        http.request({ host: 'localhost', port: 8090, method: 'GET', path: req.url },(res_sub) => {
             let data = '';
             res_sub.on('data',(chunk) => {
                 data = data + chunk.toString('utf-8');
@@ -79,7 +79,7 @@ function getMIME( url ){
     }
 
 	if( req.url.startsWith('/api/realtime/station') ){
-		http.request({ host: 'metroinder.co.kr', port: 8090, method: 'GET', path: req.url },(res_sub) => {
+		http.request({ host: 'localhost', port: 8090, method: 'GET', path: req.url },(res_sub) => {
     	let data = '';
        	res_sub.on('data',(chunk) => {
        		data = data + chunk.toString('utf-8');
@@ -114,6 +114,6 @@ function getMIME( url ){
 }).listen(8070);
 
 http.createServer((req,res) => {
-   res.writeHead(302, {'Location':'https://metroinder.co.kr'});
-   res.end();
-}).listen(8080);
+   //res.writeHead(302, {'Location':'https://metroinder.co.kr'});
+   //res.end();
+}).listen(8090);
