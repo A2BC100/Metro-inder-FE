@@ -55,10 +55,10 @@ function onMapTypeToggle(){
 
     if( !mapTypeState ){
         window.map.setMapTypeId(kakao.maps.MapTypeId.ROADMAP);
-        document.querySelector('.mt_but').style.background = 'url(../imges/Globe.svg) no-repeat';
+        document.querySelector('.mt_but').style.background = 'url(../resources/imges/Globe.svg) no-repeat';
     }else{
         window.map.setMapTypeId(kakao.maps.MapTypeId.HYBRID);
-        document.querySelector('.mt_but').style.background = 'url(../imges/map.svg) no-repeat';
+        document.querySelector('.mt_but').style.background = 'url(../resources/imges/map.svg) no-repeat';
     }
 }
 
@@ -324,7 +324,7 @@ window.onload = async() => {
             // 검색한 대상 역에 해당하는 대표 이미지를 찾아와서 그림
             let stnImg = document.querySelector('.search_box2');
             if( stnImg ){
-                stnImg.style.background = 'url(./imges/station/' + token[0] + '.jpg)';
+                stnImg.style.background = 'url(../resources/images/station/' + token[0] + '.jpg)';
                 stnImg.style.backgroundSize = '100% 100%';
             }
 
