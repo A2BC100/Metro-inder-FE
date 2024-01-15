@@ -14,6 +14,9 @@ const MIME_TABLE = [
     {"otf":"application/x-font-opentype"}
 ]
 
+/* 예측할 수 없는 예외 발생으로 인해 서버가 죽어버리는 현상 방지 */
+process.on('uncaughtException', (err) => {});
+
 /* 설명 : .env 환경 설정 파일에서 관련 설정 정보 파싱	*/
 /* 작성자 : RichardCYang 						*/
 /* 작성일 : 2024-01-15						*/
@@ -103,7 +106,7 @@ http.createServer(/*KEY_CERT,*/ (req,res) => {
 
 		/* 헤더에서 카카오 OAuth2 인가 코드를 받아오면 해당 인가 코드를 다시 백앤드 서버로 전송 */
         let code = param.code;
-        http.get('http://' + process.env.BACKEND_HOST + '?code=' + param.code, (res) => {});
+        http.get('http://' + process.env.BACKEND_HOST + '/loginMetroinder?code=' + param.code, (res) => {});
 
         return;
 	}
@@ -160,4 +163,4 @@ http.createServer(/*KEY_CERT,*/ (req,res) => {
 
         res.end(data);
     });
-}).listen(8090);
+}).listen(8070);
