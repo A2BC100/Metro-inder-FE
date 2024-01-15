@@ -17,7 +17,7 @@ function onOAuthClick( service ){
     let left = (window.innerWidth * 0.5) - 240;
     let top = (window.innerHeight * 0.5) - 320;
     let option = 'left=' + left + ',top=' + top + ', width=480, height=640, resizable=no, scrollbars=no, status=no;';
-	window.open('http://metroinder.co.kr:8090/oauth2/authorization/' + service,"", option);
+	window.open('http://www.metroinder.co.kr/oauth2/authorization/' + service,"", option);
 }
 
 function onToggleInfoBox(){

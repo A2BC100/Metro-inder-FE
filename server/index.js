@@ -13,6 +13,25 @@ const MIME_TABLE = [
     {"ttf":"application/x-font-ttf"},
     {"otf":"application/x-font-opentype"}
 ]
+
+/* 설명 : .env 환경 설정 파일에서 관련 설정 정보 파싱	*/
+/* 작성자 : RichardCYang 						*/
+/* 작성일 : 2024-01-15						*/
+if(fs.existsSync('.env')){
+	let envFile = fs.readFileSync('.env');
+	envFile = envFile.toString();
+
+	let lines = envFile.split('\n');
+	for(let i = 0; i < lines.length; i++){
+		let token = lines[i].split('=');
+		if(token.length > 1){
+			let key = token[0].trim();
+			let val = token[1].replaceAll("'", '').trim();
+			process.env[key] = val;
+		}
+	}
+}
+
 // const KEY_CERT = {key:fs.readFileSync('/etc/letsencrypt/live/metroinder.co.kr/privkey.pem'), cert:fs.readFileSync('/etc/letsencrypt/live/metroinder.co.kr/fullchain.pem')};
 
 // process.on('uncaughtException',(err) => {console.log(err)});
@@ -43,21 +62,51 @@ function getMIME( url ){
     return target;
 }
 
- http.createServer(/*KEY_CERT,*/ (req,res) => {
+/* 설명 : GET 요청 url에서 인자값을 파싱하는 함수 	*/
+/* 작성자 : RichardCYang 					*/
+/* 작성일 : 2024-01-15					*/
+function parseGetParam( url ){
+    let token = url.split('?');
+    let keyval = {}
+
+    if( token.length > 1){
+        let queryStr = token[1];
+        let queryToken = queryStr.split('&');
+
+        for(let i = 0; i < queryToken.length; i++){
+                let kvToken = queryToken[i].split('=');
+                keyval[kvToken[0]] = kvToken[1];
+        }
+    }
+
+    return keyval;
+}
+
+http.createServer(/*KEY_CERT,*/ (req,res) => {
     let resPath = '';
     req.url === '/' ? resPath = '../client/src/index.html' : resPath = '../client' + req.url;
 	
-    if( req.url.startsWith('/login/oauth2/code/kakao') ){
-		let code = req.url.split(/code=(.*?)&/g);
-
-		if( code.length > 0 ){
-			
-		}
-
-		res.writeHead(200);
-		res.end();
+	/* 해당 URL로 카카오 OAuth2 인증 요청을 보내면 /auth/kakao/callback URI로 응답 */
+    if( req.url.startsWith('/oauth2/authorization/kakao') ){
+		res.writeHead(302, {
+			'Location': 'https://kauth.kakao.com/oauth/authorize?client_id=' + process.env.KAKAO_RESTAPI_KEY + '&response_type=code&redirect_uri=http://www.metroinder.co.kr/auth/kakao/callback'
+        });
+        res.end()
 		return;
     }
+	
+	/* 카카오 OAuth2 인증 요청 응답 처리 */
+	if( req.url.startsWith('/auth/kakao/callback') ){
+		let param = parseGetParam( req.url );
+        res.writeHead(200);
+        res.end();
+
+		/* 헤더에서 카카오 OAuth2 인가 코드를 받아오면 해당 인가 코드를 다시 백앤드 서버로 전송 */
+        let code = param.code;
+        http.get('http://' + process.env.BACKEND_HOST + '?code=' + param.code, (res) => {});
+
+        return;
+	}
 
     if( req.url.startsWith('/returnPeopleCount') ){
         http.request({ host: 'localhost', port: 8090, method: 'GET', path: req.url },(res_sub) => {
@@ -111,9 +160,4 @@ function getMIME( url ){
 
         res.end(data);
     });
-}).listen(8070);
-
-http.createServer((req,res) => {
-   //res.writeHead(302, {'Location':'https://metroinder.co.kr'});
-   //res.end();
 }).listen(8090);
