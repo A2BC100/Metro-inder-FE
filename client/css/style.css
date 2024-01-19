@@ -84,14 +84,14 @@ strong{
     transition: 0.8s;
 }
 /*---------------------search_box----------------*/
-.search_box1{
-
-}
 .search_box2{
     width: 100%;
     height: 250px;
-    background: url('../resources/imges/station/기본.jpg');
-    background-size: 100% auto;
+    overflow: hidden;
+}
+.search_box2 > img{
+    position: absolute;
+    width: 100%;
 }
 .search_box{
     display: flex;

@@ -402,6 +402,9 @@ window.onload = async() => {
         subdivs[ subdivs.length - 2 ].style.right = '0px';
     }
 
+    // 로딩 완료 후, 로딩용 임시 기본 역 배너 사진을 본 이미지로 교체 (로딩 최적화)
+    document.querySelector('.stationImg').src = '../resources/imges/station/기본.jpg';
+
     let inputStn = document.querySelector('.search_box_wrap > input');
     inputStn.onkeypress = async(e) => {
         if( e.keyCode == 13 ){
@@ -469,11 +472,7 @@ window.onload = async() => {
             }
 
             // 검색한 대상 역에 해당하는 대표 이미지를 찾아와서 그림
-            let stnImg = document.querySelector('.search_box2');
-            if( stnImg ){
-                stnImg.style.background = 'url(../resources/imges/station/' + token[0] + '.jpg)';
-                stnImg.style.backgroundSize = '100% auto';
-            }
+            document.querySelector('.stationImg').src = '../resources/imges/station/' + token[0] + '.jpg';
 
             if( window.map ){
                 window.map.setCenter( new kakao.maps.LatLng(lat, lon) );
