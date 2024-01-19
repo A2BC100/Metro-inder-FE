@@ -44,7 +44,7 @@ strong{
 
 /*-------------information_box-------------*/
 .information_box{
-    overflow:scroll;
+    overflow-y:scroll;
     overflow-x:hidden;
     position: absolute;
     top: 0;
@@ -90,6 +90,8 @@ strong{
 .search_box2{
     width: 100%;
     height: 250px;
+    background: url('../resources/imges/station/기본.jpg');
+    background-size: 100% auto;
 }
 .search_box{
     display: flex;
@@ -130,14 +132,17 @@ strong{
 /*---------weather_img---------*/
 .weather_info_box{
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    margin-top: 32px;
+    margin-bottom: 32px;
 }
 .weather_img{
-    width: 221px;
-    height: 142px;
+    width: 128px;
+    height: 100%;
 }
 .weather_info{
-    text-align: right;
+    text-align: center;
+    width: 40%;
 }
 .weather_info dt{
     margin-bottom: 42px;

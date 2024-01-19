@@ -19,10 +19,12 @@
         <div class="map_img" src="" alt="">
         <button class="information_but" onclick="onToggleInfoBox()">조정</button>
         <div class="information_box">
-            <div class="search_box search_box1">
-                <div class="search_box_wrap">
-                    <input type="text" placeholder="장소를 입력해 주세요">
-                    <button>검색</button>
+            <div class="search_box search_box2">
+                <div class="search_box search_box1">
+                    <div class="search_box_wrap">
+                        <input type="text" placeholder="장소를 입력해 주세요">
+                        <button>검색</button>
+                    </div>
                 </div>
             </div>
 
@@ -43,14 +45,17 @@
 
             <div class="weather_box">
                 <h3>오늘의 날씨</h3>
-                <p> <strong>일직동&#44;</strong> 00월 00일 0요일 00&#58;00</p>
+                <p> <strong class="quarterTxt">일자 로딩 중</strong> <span class="curDate"></span></p>
                 <div class="weather_info_box">
-                    <img class="weather_img" src="" alt="">
+                    <img class="weather_img" src="../resources/imges/sunny.png" alt="">
                     <dl class="weather_info">
-                        <dt><h2>11℃</h2></dt>
-                        <dd>36℃ / -21℃</dd>
-                        <dd>오전 &#58; 폭염 주의</dd>
-                        <dd>오후 &#58; 한파 주의</dd>
+                        <dt><h2 class="curTemp">로딩 중</h2></dt>
+                        <dd class="minMaxTemp">정보 로딩 중</dd>
+                        <p>&nbsp</p>
+                        <dd class="precipitation">강수확률 : 정보 로딩 중</dd>
+                        <dd class="pm10">미세먼지 : 정보 로딩 중</dd>
+                        <dd class="pm25">초미세먼지 : 정보 로딩 중</dd>
+                        <dd class="humidity">습도 : 정보 로딩 중</dd>
                     </dl>
                 </div>
             </div>

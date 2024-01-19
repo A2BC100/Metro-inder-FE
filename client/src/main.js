@@ -1,5 +1,5 @@
 
-window.curUserName = 'Lee.Park';
+window.curUserName = 'MrDB';
 
 function deflateSide(){
     document.querySelector('.information_box').style.transform = 'translateX(-494px)';
@@ -70,8 +70,47 @@ function getCurrentLocation(){
             let coords = [];
             coords.latitude = 33.450701;
             coords.longitude = 126.570667;
-            res( coords );
+            res(coords);
         });
+    });
+}
+
+function getAddressFromLatLon( lat, lon ){
+    return new Promise((res) => {
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', 'https://nominatim.openstreetmap.org/reverse?lat=' + lat + '&lon=' + lon + '&format=json', true);
+        xhr.send();
+        xhr.onreadystatechange = () => {
+            if(xhr.readyState == 4 && xhr.status == 200){
+                res(JSON.parse(xhr.responseText));
+            }
+        };
+    })
+}
+
+function getWeatherFromLatLon( lat, lon ){
+    return new Promise((res) => {
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current=temperature_2m,precipitation,relative_humidity_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo&forecast_days=1', true);
+        xhr.send();
+        xhr.onreadystatechange = () => {
+            if(xhr.readyState == 4 && xhr.status == 200){
+                res(JSON.parse(xhr.responseText));
+            }
+        }
+    });
+}
+
+function getAirQualityFromLatLon( lat, lon ){
+    return new Promise((res) => {
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', 'https://air-quality-api.open-meteo.com/v1/air-quality?latitude=' + lat + '&longitude=' + lon + '&current=pm10,pm2_5&domains=cams_global', true);
+        xhr.send();
+        xhr.onreadystatechange = () => {
+            if(xhr.readyState == 4 && xhr.status == 200){
+                res(JSON.parse(xhr.responseText));
+            }
+        }
     });
 }
 
@@ -233,11 +272,50 @@ function getRealtimeStation( station_name ){
     });
 }
 
+function toStringDay( days ){
+    switch(days){
+        case 0:
+            return "일";
+        case 1:
+            return "월";
+        case 2:
+            return "화";
+        case 3:
+            return "수";
+        case 4:
+            return "목";
+        case 5:
+            return "금";
+        case 6:
+            return "토";
+    }
+    return "일";
+}
+
 window.onload = async() => {
     let container = document.querySelector('.map_img');
-    let coords = await getCurrentLocation();
 
-    getPeopleCount( '안양' );
+    let coords = await getCurrentLocation();
+    let weather = await getWeatherFromLatLon(coords.latitude, coords.longitude);
+    let airQual = await getAirQualityFromLatLon(coords.latitude, coords.longitude);
+    
+    // OpenMeteo API를 이용하여 날씨(최대 기온, 최소 기온, 습도, 강수확률, 현재 기온) 정보를 가져와서 표시하는 코드
+    document.querySelector('.minMaxTemp').textContent = weather.daily.temperature_2m_max[0] + '℃ / ' + weather.daily.temperature_2m_min[0] + '℃';
+    document.querySelector('.curTemp').textContent = weather.current.temperature_2m + '℃';
+    document.querySelector('.precipitation').textContent = '강수확률 : ' + weather.current.precipitation + '%';
+    document.querySelector('.humidity').textContent = '습도 : ' + weather.current.relative_humidity_2m + '%';
+
+    // OpenMeteo API를 이용하여 미세먼지(pm10, pm2.5) 정보를 가져와서 표시하는 코드
+    document.querySelector('.pm10').textContent = '미세먼지 : ' + airQual.current.pm10;
+    document.querySelector('.pm25').textContent = '초미세먼지 : ' + airQual.current.pm2_5;
+
+    let curDate = new Date();
+
+    let addr = await getAddressFromLatLon( coords.latitude, coords.longitude );
+    document.querySelector('.quarterTxt').textContent = addr.address.city + " " + (addr.address.quarter || addr.address.city_district);
+    document.querySelector('.curDate').textContent = (curDate.getUTCMonth() + 1) + "월 " + curDate.getUTCDay() + "일 " + toStringDay(curDate.getDay()) + "요일";
+
+    // getPeopleCount( '안양' );
 
     let options = {
         center: new kakao.maps.LatLng(coords.latitude, coords.longitude),
@@ -324,10 +402,9 @@ window.onload = async() => {
             // 검색한 대상 역에 해당하는 대표 이미지를 찾아와서 그림
             let stnImg = document.querySelector('.search_box2');
             if( stnImg ){
-                stnImg.style.background = 'url(../resources/images/station/' + token[0] + '.jpg)';
-                stnImg.style.backgroundSize = '100% 100%';
+                stnImg.style.background = 'url(../resources/imges/station/' + token[0] + '.jpg)';
+                stnImg.style.backgroundSize = '100% auto';
             }
-
 
             if( window.map ){
                 window.map.setCenter( new kakao.maps.LatLng(lat, lon) );

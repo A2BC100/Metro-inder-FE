@@ -106,7 +106,7 @@ http.createServer(/*KEY_CERT,*/ (req,res) => {
 
 		/* 헤더에서 카카오 OAuth2 인가 코드를 받아오면 해당 인가 코드를 다시 백앤드 서버로 전송 */
         let code = param.code;
-        http.get('http://' + process.env.BACKEND_HOST + '/loginMetroinder?code=' + param.code, (res) => {});
+        http.get('http://' + process.env.BACKEND_HOST + '/loginMetroinder?code=' + param.code + '&provider=kakao', (res) => {});
 
         return;
 	}
