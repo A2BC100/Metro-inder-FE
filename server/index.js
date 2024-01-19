@@ -97,7 +97,7 @@ function parseGetParam( url ){
     return keyval;
 }
 
-https.createServer(KEY_CERT, (req,res) => {
+function serverHandler( req, res ){
     let resPath = '';
     req.url === '/' ? resPath = '../client/src/index.html' : resPath = '../client' + req.url;
 	
@@ -175,4 +175,25 @@ https.createServer(KEY_CERT, (req,res) => {
 
         res.end(data);
     });
+}
+
+/*
+* 설명 : 암호화된 HTTPS 기반 통신으로 접속한 클라이언트 요청을 처리하기 위한 함수
+* 작성일 : 2024-01-19
+* 작성자 : RichardCYang
+* 인자값1 : KEY_CERT => 인증서 키 정보(.pem)
+* 인자값2 : (req, res) => 클라이언트 요청 시, 호출 되는 콜백 함수
+*/
+https.createServer(KEY_CERT, (req,res) => {
+    serverHandler(req, res);
+}).listen(8060);
+
+/*
+* 설명 : 암호화 하지 않은 HTTP 기반 통신으로 접속한 클라이언트 요청을 처리하기 위한 함수
+* 작성일 : 2024-01-19
+* 작성자 : RichardCYang
+* 인자값 : (req, res) => 클라이언트 요청 시, 호출 되는 콜백 함수
+*/
+http.createServer((req, res) => {
+    serverHandler(req, res);
 }).listen(8070);

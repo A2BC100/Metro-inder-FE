@@ -130,6 +130,12 @@ strong{
     outline: none;
 }
 /*---------weather_img---------*/
+.weather_box{
+    margin: 32px;
+}
+.weather_box > h3{
+    margin-bottom: 8px;
+}
 .weather_info_box{
     display: flex;
     justify-content: center;
@@ -142,10 +148,10 @@ strong{
 }
 .weather_info{
     text-align: center;
-    width: 40%;
+    width: 60%;
 }
 .weather_info dt{
-    margin-bottom: 42px;
+    margin-bottom: 24px;
 }
 /*--------------------log_box----------------*/
 .log_box{

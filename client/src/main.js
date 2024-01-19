@@ -75,14 +75,23 @@ function getCurrentLocation(){
     });
 }
 
-function getAddressFromLatLon( lat, lon ){
+/*
+* 설명 : OpenStreetMap API를 통해 위경도를 주소명으로 변환하는 리버스 지오코딩 함수
+* 작성일 : 2024-01-18
+* 작성자 : RichardCYang
+* 인자값1 : lat => 주소명으로 변환할 위치 위도
+* 인자값2 : lon => 주소명으로 변환할 위치 경도
+* 인자값3 : onComp => 지오코딩 변환 완료 시, 호출되는 콜백 함수
+*/
+function getAddressFromLatLon( lat, lon, onComp ){
     return new Promise((res) => {
         let xhr = new XMLHttpRequest();
         xhr.open('GET', 'https://nominatim.openstreetmap.org/reverse?lat=' + lat + '&lon=' + lon + '&format=json', true);
         xhr.send();
         xhr.onreadystatechange = () => {
             if(xhr.readyState == 4 && xhr.status == 200){
-                res(JSON.parse(xhr.responseText));
+                if(onComp)
+                    onComp(JSON.parse(xhr.responseText));
             }
         };
     })
@@ -92,38 +101,40 @@ function getAddressFromLatLon( lat, lon ){
 * 설명 : OpenMeteo API를 통해 날씨 정보(현재 기온, 최고/최저 기온, 습도, 강수 확률)를 받아오는 함수
 * 작성일 : 2024-01-18
 * 작성자 : RichardCYang
-* 인자값 : lat = 날씨 정보를 받아올 대상 위치 위도, lon = 날씨 정보를 받아올 대상 위치 경도
+* 인자값1 : lat => 날씨 정보를 받아올 대상 위치 위도
+* 인자값2 : lon => 날씨 정보를 받아올 대상 위치 경도
+* 인자값3 : onComp => 날씨 정보 요청 완료 시, 호출되는 콜백 함수
 */
-function getWeatherFromLatLon( lat, lon ){
-    return new Promise((res) => {
-        let xhr = new XMLHttpRequest();
-        xhr.open('GET', 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current=temperature_2m,precipitation,relative_humidity_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo&forecast_days=1', true);
-        xhr.send();
-        xhr.onreadystatechange = () => {
-            if(xhr.readyState == 4 && xhr.status == 200){
-                res(JSON.parse(xhr.responseText));
-            }
+function getWeatherFromLatLon( lat, lon, onComp ){
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current=temperature_2m,precipitation,relative_humidity_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FTokyo&forecast_days=1', true);
+    xhr.send();
+    xhr.onreadystatechange = () => {
+        if(xhr.readyState == 4 && xhr.status == 200){
+            if(onComp)
+                onComp(JSON.parse(xhr.responseText));
         }
-    });
+    }
 }
 
 /*
 * 설명 : OpenMeteo API를 통해 대기질 정보(미세먼지, 초미세먼지)를 받아오는 함수
 * 작성일 : 2024-01-19
 * 작성자 : RichardCYang
-* 인자값 : lat = 대기질 정보를 받아올 대상 위치 위도, lon = 대기질 정보를 받아올 대상 위치 경도
+* 인자값1 : lat = 대기질 정보를 받아올 대상 위치 위도
+* 인자값2 : lon = 대기질 정보를 받아올 대상 위치 경도
+* 인자값3 : onComp => 대기질 정보 요청 완료 시, 호출되는 콜백 함수
 */
-function getAirQualityFromLatLon( lat, lon ){
-    return new Promise((res) => {
-        let xhr = new XMLHttpRequest();
-        xhr.open('GET', 'https://air-quality-api.open-meteo.com/v1/air-quality?latitude=' + lat + '&longitude=' + lon + '&current=pm10,pm2_5&domains=cams_global', true);
-        xhr.send();
-        xhr.onreadystatechange = () => {
-            if(xhr.readyState == 4 && xhr.status == 200){
-                res(JSON.parse(xhr.responseText));
-            }
+function getAirQualityFromLatLon( lat, lon, onComp ){
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', 'https://air-quality-api.open-meteo.com/v1/air-quality?latitude=' + lat + '&longitude=' + lon + '&current=pm10,pm2_5&domains=cams_global', true);
+    xhr.send();
+    xhr.onreadystatechange = () => {
+        if(xhr.readyState == 4 && xhr.status == 200){
+            if(onComp)
+                onComp(JSON.parse(xhr.responseText));
         }
-    });
+    }
 }
 
 function searchPlaces( keyword ){
@@ -284,6 +295,12 @@ function getRealtimeStation( station_name ){
     });
 }
 
+/*
+* 설명 : 숫자로 들어오는 요일 인덱스를 문자열 요일로 변경하는 함수
+* 작성일 : 2024-01-18
+* 작성자 : RichardCYang
+* 인자값 : days = 요일 인덱스
+*/
 function toStringDay( days ){
     switch(days){
         case 0:
@@ -304,27 +321,67 @@ function toStringDay( days ){
     return "일";
 }
 
+/*
+* 설명 : 날씨 종류 코드(WMO)를 아이콘 이름으로 변환하는 함수
+* 작성일 : 2024-01-19
+* 작성자 : RichardCYang
+* 인자값 : wmoCode = 날씨 종류 코드(WMO)
+*/
+function weatherCodeToIconName( wmoCode ){
+    switch(wmoCode){
+        // 날씨 종류 코드(WMO) : 맑음
+        case 0:
+            return 'sunny.png';
+        // 날씨 종류 코드(WMO) : 구름 많음
+        case 1:
+        case 2:
+            return 'littlecloudy.png';
+        // 날씨 종류 코드(WMO) : 흐림
+        case 3:
+            return 'cloudy.png';
+        // 날씨 종류 코드(WMO) : 비
+        case 61:
+        case 63:
+        case 65:
+        case 66:
+        case 67:
+            return 'rainy.png';
+        // 날씨 종류 코드(WMO) : 뇌우
+        case 95:
+        case 96:
+        case 99:
+            return 'thunder.png';
+    }
+    return 'sunny.png';
+}
+
 window.onload = async() => {
     let container = document.querySelector('.map_img');
-
     let coords = await getCurrentLocation();
-    let weather = await getWeatherFromLatLon(coords.latitude, coords.longitude);
-    let airQual = await getAirQualityFromLatLon(coords.latitude, coords.longitude);
-    
-    // OpenMeteo API를 이용하여 날씨(최대 기온, 최소 기온, 습도, 강수확률, 현재 기온) 정보를 가져와서 표시하는 코드
-    document.querySelector('.minMaxTemp').textContent = weather.daily.temperature_2m_max[0] + '℃ / ' + weather.daily.temperature_2m_min[0] + '℃';
-    document.querySelector('.curTemp').textContent = weather.current.temperature_2m + '℃';
-    document.querySelector('.precipitation').textContent = '강수확률 : ' + weather.current.precipitation + '%';
-    document.querySelector('.humidity').textContent = '습도 : ' + weather.current.relative_humidity_2m + '%';
 
-    // OpenMeteo API를 이용하여 미세먼지(pm10, pm2.5) 정보를 가져와서 표시하는 코드
-    document.querySelector('.pm10').textContent = '미세먼지 : ' + airQual.current.pm10;
-    document.querySelector('.pm25').textContent = '초미세먼지 : ' + airQual.current.pm2_5;
+    getWeatherFromLatLon(coords.latitude, coords.longitude, (data) => {
+        // OpenMeteo API를 이용하여 날씨(최대 기온, 최소 기온, 습도, 강수확률, 현재 기온) 정보를 가져와서 표시하는 코드
+        document.querySelector('.minMaxTemp').textContent = data.daily.temperature_2m_max[0] + '℃ / ' + data.daily.temperature_2m_min[0] + '℃';
+        document.querySelector('.curTemp').textContent = data.current.temperature_2m + '℃';
+        document.querySelector('.precipitation_humidity').textContent = '강수확률 : ' + data.current.precipitation + '%' + ' ' + '습도 : ' + data.current.relative_humidity_2m + '%';
+
+        let iconName = weatherCodeToIconName(data.current.weather_code);
+        let weatherIcon = '../resources/imges/' + iconName;
+        
+        document.querySelector('.weather_img').src = weatherIcon;
+    });
+
+    getAirQualityFromLatLon(coords.latitude, coords.longitude, (data) => {
+        // OpenMeteo API를 이용하여 미세먼지(pm10, pm2.5) 정보를 가져와서 표시하는 코드
+        document.querySelector('.pms').textContent = '미세먼지 : ' + data.current.pm10 + ' ' + '초미세먼지 : ' + data.current.pm2_5;
+    })
+
+    getAddressFromLatLon(coords.latitude, coords.longitude, (data) => {
+        // OpenStreetMap API를 이용하여 현재 위경도를 기준으로 리버스 지오코딩 변환 후 그 주소명을 표시하는 코드
+        document.querySelector('.quarterTxt').textContent = data.address.city + " " + (data.address.quarter || data.address.city_district || data.address.suburb);
+    });
 
     let curDate = new Date();
-
-    let addr = await getAddressFromLatLon( coords.latitude, coords.longitude );
-    document.querySelector('.quarterTxt').textContent = addr.address.city + " " + (addr.address.quarter || addr.address.city_district);
     document.querySelector('.curDate').textContent = (curDate.getUTCMonth() + 1) + "월 " + curDate.getUTCDay() + "일 " + toStringDay(curDate.getDay()) + "요일";
 
     // getPeopleCount( '안양' );
