@@ -88,6 +88,12 @@ function getAddressFromLatLon( lat, lon ){
     })
 }
 
+/*
+* 설명 : OpenMeteo API를 통해 날씨 정보(현재 기온, 최고/최저 기온, 습도, 강수 확률)를 받아오는 함수
+* 작성일 : 2024-01-18
+* 작성자 : RichardCYang
+* 인자값 : lat = 날씨 정보를 받아올 대상 위치 위도, lon = 날씨 정보를 받아올 대상 위치 경도
+*/
 function getWeatherFromLatLon( lat, lon ){
     return new Promise((res) => {
         let xhr = new XMLHttpRequest();
@@ -101,6 +107,12 @@ function getWeatherFromLatLon( lat, lon ){
     });
 }
 
+/*
+* 설명 : OpenMeteo API를 통해 대기질 정보(미세먼지, 초미세먼지)를 받아오는 함수
+* 작성일 : 2024-01-19
+* 작성자 : RichardCYang
+* 인자값 : lat = 대기질 정보를 받아올 대상 위치 위도, lon = 대기질 정보를 받아올 대상 위치 경도
+*/
 function getAirQualityFromLatLon( lat, lon ){
     return new Promise((res) => {
         let xhr = new XMLHttpRequest();

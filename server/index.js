@@ -1,7 +1,8 @@
 
 const fs = require('fs');
-// const https = require('https');
 const http = require('http');
+const https = require('https');
+
 const MIME_TABLE = [
     {"html":"text/html"},
     {"css":"text/css"},
@@ -14,12 +15,18 @@ const MIME_TABLE = [
     {"otf":"application/x-font-opentype"}
 ]
 
-/* 예측할 수 없는 예외 발생으로 인해 서버가 죽어버리는 현상 방지 */
-process.on('uncaughtException', (err) => {});
+/*
+* 설명 : 예기치 못한 예외 발생으로 인해 서버 프로그램이 종료되는 일이 발생하지 못하도록 처리
+* 작성일 : 2024-01-19
+* 작성자 : RichardCYang
+*/
+process.on('uncaughtException', (err) => {console.log(err)});
 
-/* 설명 : .env 환경 설정 파일에서 관련 설정 정보 파싱	*/
-/* 작성자 : RichardCYang 						*/
-/* 작성일 : 2024-01-15						*/
+/*
+* 설명 : .env 환경 설정 파일에서 관련 설정 정보 파싱하는 코드
+* 작성일 : 2024-01-15
+* 작성자 : RichardCYang
+*/
 if(fs.existsSync('.env')){
 	let envFile = fs.readFileSync('.env');
 	envFile = envFile.toString();
@@ -35,9 +42,11 @@ if(fs.existsSync('.env')){
 	}
 }
 
-// const KEY_CERT = {key:fs.readFileSync('/etc/letsencrypt/live/metroinder.co.kr/privkey.pem'), cert:fs.readFileSync('/etc/letsencrypt/live/metroinder.co.kr/fullchain.pem')};
+let KEY_CERT = null;
 
-// process.on('uncaughtException',(err) => {console.log(err)});
+if( fs.existsSync(process.env.HTTPS_KEYPEM) && fs.existsSync(process.env.HTTPS_CHNPEM) ){
+    KEY_CERT = {key:fs.readFileSync(process.env.HTTPS_KEYPEM), cert:fs.readFileSync(process.env.HTTPS_CHNPEM)};
+}
 
 function getLastExtension( fullpath ){
     let lastIdx = -1;
@@ -65,9 +74,12 @@ function getMIME( url ){
     return target;
 }
 
-/* 설명 : GET 요청 url에서 인자값을 파싱하는 함수 	*/
-/* 작성자 : RichardCYang 					*/
-/* 작성일 : 2024-01-15					*/
+/*
+* 설명 : GET 요청 URL에서 인자값을 파싱하는 함수
+* 작성일 : 2024-01-15
+* 작성자 : RichardCYang
+* 인자값 : url = 인자값을 파싱할 대상 전체 GET 요청 URL 문자열
+*/
 function parseGetParam( url ){
     let token = url.split('?');
     let keyval = {}
@@ -85,7 +97,7 @@ function parseGetParam( url ){
     return keyval;
 }
 
-http.createServer(/*KEY_CERT,*/ (req,res) => {
+https.createServer(KEY_CERT, (req,res) => {
     let resPath = '';
     req.url === '/' ? resPath = '../client/src/index.html' : resPath = '../client' + req.url;
 	

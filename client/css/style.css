@@ -167,10 +167,10 @@ strong{
 .log_box2 {
     display: none;
 }
-.login_border{
+/*.login_border{
     border-right:1px solid #E9E9E9;
     padding-right: 8px;
-}
+}*/
 .login_txt{
     display: inline-block;
     width: 20px; height: 20px;
