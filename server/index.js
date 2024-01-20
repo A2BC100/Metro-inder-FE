@@ -109,7 +109,65 @@ function serverHandler( req, res ){
         res.end()
 		return;
     }
+
+    /* 해당 URL로 네이버 OAuth2 인증 요청을 보내면 /auth/naver/callback URI로 응답 */
+    if( req.url.startsWith('/oauth2/authorization/naver') ){
+        res.writeHead(302, {
+			'Location': 'https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=' + process.env.NAVER_RESTAPI_KEY + '&redirect_uri=http://www.metroinder.co.kr/auth/naver/callback&state=test'
+        });
+        res.end()
+		return;
+    }
+
+    /* 해당 URL로 구글 OAuth2 인증 요청을 보내면 /auth/google/callback URI로 응답 */
+    if( req.url.startsWith('/oauth2/authorization/google') ){
+        res.writeHead(302, {
+			'Location': 'https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=' + process.env.GOGLE_RESTAPI_KEY + '&redirect_uri=http://www.metroinder.co.kr/auth/google/callback&scope=https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email&include_granted_scopes=true&access_type=offline'
+        });
+        res.end()
+		return;
+    }
 	
+    /* 구글 OAuth2 인증 요청 응답 처리 */
+    if( req.url.startsWith('/auth/google/callback') ){
+        let param = parseGetParam( req.url );
+        res.writeHead(200);
+        res.end();
+
+        /* 헤더에서 네이버 OAuth2 인가 코드를 받아오면 해당 인가 코드를 다시 백앤드 서버로 전송 */
+        http.get('http://' + process.env.BACKEND_HOST + '/loginMetroinder?code=' + param.code + '&provider=google', (rsp) => {
+            let body = '';
+            rsp.on('data', (chunk) => {
+                body += chunk;
+            });
+            rsp.on('end', () => {
+                console.log(body);
+            });
+        });
+
+        return;
+    }
+
+    /* 네이버 OAuth2 인증 요청 응답 처리 */
+    if( req.url.startsWith('/auth/naver/callback') ){
+        let param = parseGetParam( req.url );
+        res.writeHead(200);
+        res.end();
+
+        /* 헤더에서 네이버 OAuth2 인가 코드를 받아오면 해당 인가 코드를 다시 백앤드 서버로 전송 */
+        http.get('http://' + process.env.BACKEND_HOST + '/loginMetroinder?code=' + param.code + '&provider=naver', (rsp) => {
+            let body = '';
+            rsp.on('data', (chunk) => {
+                body += chunk;
+            });
+            rsp.on('end', () => {
+                console.log(body);
+            });
+        });
+
+        return;
+    }
+
 	/* 카카오 OAuth2 인증 요청 응답 처리 */
 	if( req.url.startsWith('/auth/kakao/callback') ){
 		let param = parseGetParam( req.url );
@@ -117,7 +175,6 @@ function serverHandler( req, res ){
         res.end();
 
 		/* 헤더에서 카카오 OAuth2 인가 코드를 받아오면 해당 인가 코드를 다시 백앤드 서버로 전송 */
-        let code = param.code;
         http.get('http://' + process.env.BACKEND_HOST + '/loginMetroinder?code=' + param.code + '&provider=kakao', (rsp) => {
             let body = '';
             rsp.on('data', (chunk) => {
