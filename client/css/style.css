@@ -28,6 +28,10 @@ strong{
 
 }
 
+hr{
+    border: 1px solid rgb(240, 240, 240);
+}
+
 /*---map----*/
 .map_box{
     width: 100%;
@@ -128,6 +132,19 @@ strong{
 }
 .search_box_wrap input:focus{
     outline: none;
+}
+/*---------newsfed_img---------*/
+.newsfeed_box{
+    margin: 32px;
+}
+.news_info_box{
+    position: relative;
+    margin-top: 8px;
+    height: 160px;
+}
+.news_list li{
+    margin-top: 4px;
+    margin-bottom: 4px;
 }
 /*---------weather_img---------*/
 .weather_box{

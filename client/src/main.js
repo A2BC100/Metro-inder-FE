@@ -137,6 +137,18 @@ function getAirQualityFromLatLon( lat, lon, onComp ){
     }
 }
 
+function getNewsFeed( onComp ){
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', '/getNews', true);
+    xhr.send();
+    xhr.onreadystatechange = () => {
+        if(xhr.readyState == 4 && xhr.status == 200){
+            if(onComp)
+                onComp(new DOMParser().parseFromString(xhr.responseText, 'text/xml'));
+        }
+    }
+}
+
 function searchPlaces( keyword ){
     let places = new kakao.maps.services.Places();
 
@@ -379,6 +391,25 @@ window.onload = async() => {
     getAddressFromLatLon(coords.latitude, coords.longitude, (data) => {
         // OpenStreetMap API를 이용하여 현재 위경도를 기준으로 리버스 지오코딩 변환 후 그 주소명을 표시하는 코드
         document.querySelector('.quarterTxt').textContent = data.address.city + " " + (data.address.quarter || data.address.city_district || data.address.suburb);
+    });
+
+    getNewsFeed((data) => {
+        let items = data.querySelectorAll('item');
+        let lists = document.querySelectorAll('.news_list li');
+        
+        for(let i = 0; i < 8; i++){
+            let item = items[i];
+            let src = item.querySelector('source').textContent;
+            let title = item.querySelector('title').textContent;
+
+            title = title.lastIndexOf('-') > -1 ? title.substring(0, title.lastIndexOf('-')) : title;
+            title = title.trim();
+
+            if(title.length > 20)
+                title = title.substring(0, 20) + '...';
+
+            lists[i].textContent = title + ' - ' + src;
+        }
     });
 
     let curDate = new Date();

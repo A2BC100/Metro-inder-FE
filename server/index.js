@@ -118,10 +118,32 @@ function serverHandler( req, res ){
 
 		/* 헤더에서 카카오 OAuth2 인가 코드를 받아오면 해당 인가 코드를 다시 백앤드 서버로 전송 */
         let code = param.code;
-        http.get('http://' + process.env.BACKEND_HOST + '/loginMetroinder?code=' + param.code + '&provider=kakao', (res) => {});
+        http.get('http://' + process.env.BACKEND_HOST + '/loginMetroinder?code=' + param.code + '&provider=kakao', (rsp) => {
+            let body = '';
+            rsp.on('data', (chunk) => {
+                body += chunk;
+            });
+            rsp.on('end', () => {
+                console.log(body);
+            });
+        });
 
         return;
 	}
+
+    if( req.url.startsWith('/getNews') ){
+        https.get('https://news.google.com/rss/search?q=%EC%A7%80%ED%95%98%EC%B2%A0+when:1d&hl=en-US&gl=US&ceid=US:en', (rsp) => {
+            let body = '';
+            rsp.on('data', (chunk) => {
+                body += chunk;
+            });
+            rsp.on('end', () => {
+                res.writeHead(200);
+                res.end(body);
+            });
+        });
+        return;
+    }
 
     if( req.url.startsWith('/returnPeopleCount') ){
         http.request({ host: 'localhost', port: 8090, method: 'GET', path: req.url },(res_sub) => {
