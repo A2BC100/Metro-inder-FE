@@ -131,18 +131,22 @@ function serverHandler( req, res ){
     /* 구글 OAuth2 인증 요청 응답 처리 */
     if( req.url.startsWith('/auth/google/callback') ){
         let param = parseGetParam( req.url );
-        res.writeHead(200);
-        res.end();
+        res.writeHead(200, {'Content-Type':'text/html'});
 
         /* 헤더에서 네이버 OAuth2 인가 코드를 받아오면 해당 인가 코드를 다시 백앤드 서버로 전송 */
-        http.get('http://' + process.env.BACKEND_HOST + '/loginMetroinder?code=' + param.code + '&provider=google', (rsp) => {
+        let greq = http.get('http://' + process.env.BACKEND_HOST + '/loginMetroinder?code=' + param.code + '&provider=google', (rsp) => {
             let body = '';
             rsp.on('data', (chunk) => {
                 body += chunk;
             });
             rsp.on('end', () => {
-                console.log(body);
+                res.end('<script>window.close();</script>');
             });
+        });
+
+        /* 로그인 서버와 연결 실패 시, 클라이언트 오류 처리 */
+        greq.on('error', (err) => {
+            res.end('<head><meta charset="utf-8"></head><body><script>alert("로그인 인증 서버 연결 실패"); window.close();</script></body>');
         });
 
         return;
@@ -151,18 +155,22 @@ function serverHandler( req, res ){
     /* 네이버 OAuth2 인증 요청 응답 처리 */
     if( req.url.startsWith('/auth/naver/callback') ){
         let param = parseGetParam( req.url );
-        res.writeHead(200);
-        res.end();
+        res.writeHead(200, {'Content-Type':'text/html'});
 
         /* 헤더에서 네이버 OAuth2 인가 코드를 받아오면 해당 인가 코드를 다시 백앤드 서버로 전송 */
-        http.get('http://' + process.env.BACKEND_HOST + '/loginMetroinder?code=' + param.code + '&provider=naver', (rsp) => {
+        let greq = http.get('http://' + process.env.BACKEND_HOST + '/loginMetroinder?code=' + param.code + '&provider=naver', (rsp) => {
             let body = '';
             rsp.on('data', (chunk) => {
                 body += chunk;
             });
             rsp.on('end', () => {
-                console.log(body);
+                res.end('<script>window.close();</script>');
             });
+        });
+
+        /* 로그인 서버와 연결 실패 시, 클라이언트 오류 처리 */
+        greq.on('error', (err) => {
+            res.end('<head><meta charset="utf-8"></head><body><script>alert("로그인 인증 서버 연결 실패"); window.close();</script></body>');
         });
 
         return;
@@ -171,18 +179,22 @@ function serverHandler( req, res ){
 	/* 카카오 OAuth2 인증 요청 응답 처리 */
 	if( req.url.startsWith('/auth/kakao/callback') ){
 		let param = parseGetParam( req.url );
-        res.writeHead(200);
-        res.end();
+        res.writeHead(200, {'Content-Type':'text/html'});
 
 		/* 헤더에서 카카오 OAuth2 인가 코드를 받아오면 해당 인가 코드를 다시 백앤드 서버로 전송 */
-        http.get('http://' + process.env.BACKEND_HOST + '/loginMetroinder?code=' + param.code + '&provider=kakao', (rsp) => {
+        let greq = http.get('http://' + process.env.BACKEND_HOST + '/loginMetroinder?code=' + param.code + '&provider=kakao', (rsp) => {
             let body = '';
             rsp.on('data', (chunk) => {
                 body += chunk;
             });
             rsp.on('end', () => {
-                console.log(body);
+                res.end('<script>window.close();</script>');
             });
+        });
+
+        /* 로그인 서버와 연결 실패 시, 클라이언트 오류 처리 */
+        greq.on('error', (err) => {
+            res.end('<head><meta charset="utf-8"></head><body><script>alert("로그인 인증 서버 연결 실패"); window.close();</script></body>');
         });
 
         return;
