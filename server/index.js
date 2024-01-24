@@ -140,7 +140,18 @@ function serverHandler( req, res ){
                 body += chunk;
             });
             rsp.on('end', () => {
-                res.end('<script>window.close();</script>');
+                let data = JSON.parse(body);
+                let auth = rsp.headers['authorization'];
+                let aref = rsp.headers['authorization-refresh'];
+
+                let queryStr = '<script>window.close();';
+                queryStr += 'localStorage.setItem("login_user", "' + data.UserName + '");';
+                queryStr += 'localStorage.setItem("login_email", "' + data.email + '");';
+                queryStr += 'localStorage.setItem("auth", "' + auth + '");';
+                queryStr += 'localStorage.setItem("auth-ref", "' + aref + '");';
+                queryStr += '</script>';
+
+                res.end(queryStr);
             });
         });
 
@@ -164,7 +175,18 @@ function serverHandler( req, res ){
                 body += chunk;
             });
             rsp.on('end', () => {
-                res.end('<script>window.close();</script>');
+                let data = JSON.parse(body);
+                let auth = rsp.headers['authorization'];
+                let aref = rsp.headers['authorization-refresh'];
+
+                let queryStr = '<script>window.close();';
+                queryStr += 'localStorage.setItem("login_user", "' + data.UserName + '");';
+                queryStr += 'localStorage.setItem("login_email", "' + data.email + '");';
+                queryStr += 'localStorage.setItem("auth", "' + auth + '");';
+                queryStr += 'localStorage.setItem("auth-ref", "' + aref + '");';
+                queryStr += '</script>';
+
+                res.end(queryStr);
             });
         });
 
@@ -188,7 +210,18 @@ function serverHandler( req, res ){
                 body += chunk;
             });
             rsp.on('end', () => {
-                res.end('<script>window.close();</script>');
+                let data = JSON.parse(body);
+                let auth = rsp.headers['authorization'];
+                let aref = rsp.headers['authorization-refresh'];
+
+                let queryStr = '<script>window.close();';
+                queryStr += 'localStorage.setItem("login_user", "' + data.UserName + '");';
+                queryStr += 'localStorage.setItem("login_email", "' + data.email + '");';
+                queryStr += 'localStorage.setItem("auth", "' + auth + '");';
+                queryStr += 'localStorage.setItem("auth-ref", "' + aref + '");';
+                queryStr += '</script>';
+
+                res.end(queryStr);
             });
         });
 
@@ -199,6 +232,15 @@ function serverHandler( req, res ){
 
         return;
 	}
+
+    if( req.url.startsWith('/validUserToken') ){
+        let auth = req.headers['authorization'];
+        let aref = req.headers['authorization-refresh'];
+
+        res.writeHead(200);
+        res.end();
+        return;
+    }
 
     if( req.url.startsWith('/getNews') ){
         https.get('https://news.google.com/rss/search?q=%EC%A7%80%ED%95%98%EC%B2%A0+when:1d&hl=en-US&gl=US&ceid=US:en', (rsp) => {
