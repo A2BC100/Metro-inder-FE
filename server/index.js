@@ -157,6 +157,7 @@ function serverHandler( req, res ){
 
         /* 로그인 서버와 연결 실패 시, 클라이언트 오류 처리 */
         greq.on('error', (err) => {
+            console.log('[오류]: 로그인 인증 서버(' + process.env.BACKEND_HOST + ')에 접속할 수 없습니다!');
             res.end('<head><meta charset="utf-8"></head><body><script>alert("로그인 인증 서버 연결 실패"); window.close();</script></body>');
         });
 
@@ -192,6 +193,7 @@ function serverHandler( req, res ){
 
         /* 로그인 서버와 연결 실패 시, 클라이언트 오류 처리 */
         greq.on('error', (err) => {
+            console.log('[오류]: 로그인 인증 서버(' + process.env.BACKEND_HOST + ')에 접속할 수 없습니다!');
             res.end('<head><meta charset="utf-8"></head><body><script>alert("로그인 인증 서버 연결 실패"); window.close();</script></body>');
         });
 
@@ -227,6 +229,7 @@ function serverHandler( req, res ){
 
         /* 로그인 서버와 연결 실패 시, 클라이언트 오류 처리 */
         greq.on('error', (err) => {
+            console.log('[오류]: 로그인 인증 서버(' + process.env.BACKEND_HOST + ')에 접속할 수 없습니다!');
             res.end('<head><meta charset="utf-8"></head><body><script>alert("로그인 인증 서버 연결 실패"); window.close();</script></body>');
         });
 
@@ -236,6 +239,9 @@ function serverHandler( req, res ){
     if( req.url.startsWith('/validUserToken') ){
         let auth = req.headers['authorization'];
         let aref = req.headers['authorization-refresh'];
+
+        let greq = http.get('http://' + process.env.BACKEND_HOST + '', {headers: {'authorization':'bearer ' + auth, 'authorization-refresh':'bearer ' + aref}}, (rsp) => {});
+        greq.on('error', (err) => { console.log('[오류]: 로그인 인증 서버(' + process.env.BACKEND_HOST + ')에 접속할 수 없습니다!'); });
 
         res.writeHead(200);
         res.end();
@@ -257,7 +263,7 @@ function serverHandler( req, res ){
     }
 
     if( req.url.startsWith('/returnPeopleCount') ){
-        http.request({ host: 'localhost', port: 8090, method: 'GET', path: req.url },(res_sub) => {
+        /*http.request({ host: 'localhost', port: 8090, method: 'GET', path: req.url },(res_sub) => {
             let data = '';
             res_sub.on('data',(chunk) => {
                 data = data + chunk.toString('utf-8');
@@ -271,12 +277,14 @@ function serverHandler( req, res ){
                     res.end('[]');
                 }
             });
-        }).end();
+        }).end();*/
+        res.writeHead(200);
+        res.end('[]');
         return;
     }
 
 	if( req.url.startsWith('/api/realtime/station') ){
-		http.request({ host: 'localhost', port: 8090, method: 'GET', path: req.url },(res_sub) => {
+		/*http.request({ host: 'localhost', port: 8090, method: 'GET', path: req.url },(res_sub) => {
     	let data = '';
        	res_sub.on('data',(chunk) => {
        		data = data + chunk.toString('utf-8');
@@ -290,7 +298,9 @@ function serverHandler( req, res ){
               		res.end('[]');
       			}
         	});
-        }).end();
+        }).end();*/
+        res.writeHead(200);
+        res.end('[]');
 		return;
 	}
 
