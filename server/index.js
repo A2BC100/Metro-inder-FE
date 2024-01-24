@@ -240,7 +240,7 @@ function serverHandler( req, res ){
         let auth = req.headers['authorization'];
         let aref = req.headers['authorization-refresh'];
 
-        let greq = http.get('http://' + process.env.BACKEND_HOST + '', {headers: {'authorization':'bearer ' + auth, 'authorization-refresh':'bearer ' + aref}}, (rsp) => {});
+        let greq = http.get('http://' + process.env.BACKEND_HOST + '/validationAccess', {headers: {'authorization':'bearer ' + auth, 'authorization-refresh':'bearer ' + aref}}, (rsp) => {});
         greq.on('error', (err) => { console.log('[오류]: 로그인 인증 서버(' + process.env.BACKEND_HOST + ')에 접속할 수 없습니다!'); });
 
         res.writeHead(200);
