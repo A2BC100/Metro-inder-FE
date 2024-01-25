@@ -307,6 +307,13 @@ function getRealtimeStation( station_name ){
     });
 }
 
+function sendAccessTokenValidation(){
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', '/validationAccessToken', false);
+    xhr.setRequestHeader('authorization', localStorage.getItem('auth') == null ? '' : localStorage.getItem('auth'));
+    xhr.send();
+}
+
 /*
 * 설명 : 숫자로 들어오는 요일 인덱스를 문자열 요일로 변경하는 함수
 * 작성일 : 2024-01-18
@@ -366,6 +373,12 @@ function weatherCodeToIconName( wmoCode ){
     }
     return 'sunny.png';
 }
+
+setInterval(() => {
+    if(localStorage.getItem('auth') != null){
+        sendAccessTokenValidation();
+    }
+}, 30000);
 
 window.onload = async() => {
     localStorage.removeItem('login_user');
