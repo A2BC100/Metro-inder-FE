@@ -15,6 +15,8 @@ const MIME_TABLE = [
     {"otf":"application/x-font-opentype"}
 ]
 
+const tokens = [];
+
 /*
 * 설명 : 예기치 못한 예외 발생으로 인해 서버 프로그램이 종료되는 일이 발생하지 못하도록 처리
 * 작성일 : 2024-01-19
@@ -144,6 +146,8 @@ function serverHandler( req, res ){
                 let auth = rsp.headers['authorization'];
                 let aref = rsp.headers['authorization-refresh'];
 
+                tokens.push(auth);
+
                 let queryStr = '<script>window.close();';
                 queryStr += 'localStorage.setItem("login_user", "' + data.UserName + '");';
                 queryStr += 'localStorage.setItem("login_email", "' + data.email + '");';
@@ -179,6 +183,8 @@ function serverHandler( req, res ){
                 let data = JSON.parse(body);
                 let auth = rsp.headers['authorization'];
                 let aref = rsp.headers['authorization-refresh'];
+
+                tokens.push(auth);
 
                 let queryStr = '<script>window.close();';
                 queryStr += 'localStorage.setItem("login_user", "' + data.UserName + '");';
@@ -216,6 +222,8 @@ function serverHandler( req, res ){
                 let auth = rsp.headers['authorization'];
                 let aref = rsp.headers['authorization-refresh'];
 
+                tokens.push(auth);
+
                 let queryStr = '<script>window.close();';
                 queryStr += 'localStorage.setItem("login_user", "' + data.UserName + '");';
                 queryStr += 'localStorage.setItem("login_email", "' + data.email + '");';
@@ -235,18 +243,6 @@ function serverHandler( req, res ){
 
         return;
 	}
-
-    if( req.url.startsWith('/validUserToken') ){
-        let auth = req.headers['authorization'];
-        let aref = req.headers['authorization-refresh'];
-
-        let greq = http.get('http://' + process.env.BACKEND_HOST + '/validationAccess', {headers: {'authorization':'bearer ' + auth, 'authorization-refresh':'bearer ' + aref}}, (rsp) => {});
-        greq.on('error', (err) => { console.log('[오류]: 로그인 인증 서버(' + process.env.BACKEND_HOST + ')에 접속할 수 없습니다!'); });
-
-        res.writeHead(200);
-        res.end();
-        return;
-    }
 
     if( req.url.startsWith('/getNews') ){
         https.get('https://news.google.com/rss/search?q=%EC%A7%80%ED%95%98%EC%B2%A0+when:1d&hl=en-US&gl=US&ceid=US:en', (rsp) => {
@@ -319,6 +315,19 @@ function serverHandler( req, res ){
         res.end(data);
     });
 }
+
+/*
+* 설명 : 주기적으로 토큰 상태를 체크하는 루프
+* 작성일 : 2024-01-25
+* 작성자 : RichardCYang
+*/
+setInterval(() => {
+    for(let i = 0; i < tokens.length; i++){
+        let auth = tokens[i];
+        let greq = http.get('http://' + process.env.BACKEND_HOST + '/validationAccess', {headers: {'Authorization':'Bearer ' + auth}}, (rsp) => {});
+        greq.on('error', (err) => { console.log('[오류]: 로그인 인증 서버(' + process.env.BACKEND_HOST + ')에 접속할 수 없습니다!'); });
+    }
+}, 20000);
 
 /*
 * 설명 : 암호화된 HTTPS 기반 통신으로 접속한 클라이언트 요청을 처리하기 위한 함수

@@ -18,15 +18,6 @@ function onOAuthClick( service ){
     let top = (window.innerHeight * 0.5) - 320;
     let option = 'left=' + left + ',top=' + top + ', width=480, height=640, resizable=no, scrollbars=no, status=no;';
 	let popup = window.open('http://www.metroinder.co.kr/oauth2/authorization/' + service,"", option);
-
-    popup.onunload = () => {
-        if( localStorage.getItem('login_user') != null ){
-            setInterval(() => {
-                // 로그인에 성공하였다면? 30초마다 토큰을 서버로 전송
-                sendUserTokenValidation();
-            }, 30000);
-        }
-    }
 }
 
 function onToggleInfoBox(){
@@ -69,14 +60,6 @@ function onMapTypeToggle(){
         window.map.setMapTypeId(kakao.maps.MapTypeId.HYBRID);
         document.querySelector('.mt_but').style.background = 'url(../resources/imges/map.svg) no-repeat';
     }
-}
-
-function sendUserTokenValidation(){
-    let xhr = new XMLHttpRequest();
-    xhr.setRequestHeader('authorization', localStorage.getItem('auth') == null ? '' : localStorage.getItem('auth'));
-    xhr.setRequestHeader('authorization-refresh', localStorage.getItem('auth-ref') == null ? '' : localStorage.getItem('auth-ref'));
-    xhr.open('GET', '/validUserToken', false);
-    xhr.send();
 }
 
 function getCurrentLocation(){
