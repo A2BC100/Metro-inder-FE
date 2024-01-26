@@ -43,6 +43,7 @@ if(fs.existsSync('.env')){
 }
 
 let KEY_CERT = null;
+let LAST_CODES = [];
 
 if( fs.existsSync(process.env.HTTPS_KEYPEM) && fs.existsSync(process.env.HTTPS_CHNPEM) ){
     KEY_CERT = {key:fs.readFileSync(process.env.HTTPS_KEYPEM), cert:fs.readFileSync(process.env.HTTPS_CHNPEM)};
@@ -133,6 +134,13 @@ function serverHandler( req, res ){
         let param = parseGetParam( req.url );
         res.writeHead(200, {'Content-Type':'text/html'});
 
+        if( LAST_CODES['google'] && LAST_CODES['google'] == param.code ){
+            res.end();
+            return;
+        }
+
+        LAST_CODES['google'] = param.code;
+
         /* 헤더에서 네이버 OAuth2 인가 코드를 받아오면 해당 인가 코드를 다시 백앤드 서버로 전송 */
         let greq = http.get('http://' + process.env.BACKEND_HOST + '/loginMetroinder?code=' + param.code + '&provider=google', (rsp) => {
             let body = '';
@@ -169,6 +177,13 @@ function serverHandler( req, res ){
         let param = parseGetParam( req.url );
         res.writeHead(200, {'Content-Type':'text/html'});
 
+        if( LAST_CODES['naver'] && LAST_CODES['naver'] == param.code ){
+            res.end();
+            return;
+        }
+
+        LAST_CODES['naver'] = param.code;
+
         /* 헤더에서 네이버 OAuth2 인가 코드를 받아오면 해당 인가 코드를 다시 백앤드 서버로 전송 */
         let greq = http.get('http://' + process.env.BACKEND_HOST + '/loginMetroinder?code=' + param.code + '&provider=naver', (rsp) => {
             let body = '';
@@ -204,6 +219,13 @@ function serverHandler( req, res ){
 	if( req.url.startsWith('/auth/kakao/callback') ){
 		let param = parseGetParam( req.url );
         res.writeHead(200, {'Content-Type':'text/html'});
+
+        if( LAST_CODES['kakao'] && LAST_CODES['kakao'] == param.code ){
+            res.end();
+            return;
+        }
+
+        LAST_CODES['kakao'] = param.code;
 
 		/* 헤더에서 카카오 OAuth2 인가 코드를 받아오면 해당 인가 코드를 다시 백앤드 서버로 전송 */
         let greq = http.get('http://' + process.env.BACKEND_HOST + '/loginMetroinder?code=' + param.code + '&provider=kakao', (rsp) => {
