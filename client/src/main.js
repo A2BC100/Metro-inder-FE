@@ -478,6 +478,7 @@ window.onload = async() => {
                 document.querySelector('.tit_box > div > h2').textContent = token[0];
                 document.querySelector('.tit_box > p > strong').textContent = token[1];
                 document.querySelector('.weather_box').style.display = 'none';
+                document.querySelector('.newsfeed_box').style.display = 'none';
                 
                 getRealtimeStation( token[0].substring(0, token[0].length - 1) ).then((obj) => {
                     let upcnt = 0;
