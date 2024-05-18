@@ -27,6 +27,168 @@ function onToggleInfoBox(){
     else
         inflateSide();
 }
+/*
+*   설명    : 제너(Zener) 카드 순서를 인자로 받아 해당 순서에 해당하는 카드 이름을 반환
+*   인자값1 : idx => 제너(Zener) 카드의 순서 (0부터 시작함)
+*   작성자  : RichardCYang
+*   작성일  : 24/05/18
+*/
+function getZenerCardNameFromIndex( idx ){
+    switch (idx){
+        case 0:
+            return 'Circle';
+        case 1:
+            return 'Cross';
+        case 2:
+            return 'Wave';
+        case 3:
+            return 'Square';
+        case 4:
+            return 'Star';
+    }
+}
+/*
+*   설명    : 인간 의식(PK)의 영향을 테스트하기 위한 제너(Zener) 카드 위젯 기능 구현
+*   작성자  : RichardCYang
+*   작성일  : 24/05/17
+*/
+function onStartZenerCards(){
+    let intro = document.querySelector('.zenercards_intro');
+    let loading = document.querySelector('.zenercards_loading');
+    let player = document.querySelector('.zenercards_player');
+
+    intro.style.display = 'none';
+    loading.style.display = 'block';
+    player.style.display = 'none';
+
+    let shuffle_done = false;
+
+    let loading_icon = document.querySelector('.zenercards_loading_icon');
+    let incmode = true;
+    let i = 0;
+
+    let cards_icons = [];
+    cards_icons.push('../resources/imges/Zener_Circle_Card.svg');
+    cards_icons.push('../resources/imges/Zener_Cross_Card.svg');
+    cards_icons.push('../resources/imges/Zener_Wave_Card.svg');
+    cards_icons.push('../resources/imges/Zener_Square_Card.svg');
+    cards_icons.push('../resources/imges/Zener_Star_Card.svg');
+
+    let cards_icon_idx = 0;
+    let render_request_id = 0;
+
+    let anim_callback = () => {
+        if (i == 0){
+            if (cards_icon_idx < cards_icons.length){
+                loading_icon.src = cards_icons[cards_icon_idx];
+                cards_icon_idx++;
+            }else{
+                cards_icon_idx = 0;
+            }
+        }
+
+        if (i == 100)
+            incmode = false;
+
+        if (i == 0)
+            incmode = true;
+
+        if (incmode)
+            i++;
+        else
+            i--;
+
+        if (shuffle_done){
+            cancelAnimationFrame(render_request_id);
+            loading.style.display = 'none';
+            player.style.display = 'block';
+            return;
+        }
+
+        loading_icon.style.transform = 'translateX(-50%) scale(' + (i / 100.0) + ', 1.0)';
+        render_request_id = requestAnimationFrame(anim_callback);
+    };
+
+    // 제목 : 제너 카드 랜덤 섞기
+    // 설명 : 인간 의식(PK)의 영향을 쉽게 받게 하기 위해 일반적인 유사 난수 생성 알고리즘(PRNG) 보다
+    // 암호학적으로 안전한 유사 난수 생성 알고리즘(CSPRNG) 사용함 (PRNG(x) -> CSPRNG(o))
+    // 추가 : 원래 인간 의식(PK)의 영향을 더 잘 받게 하기 위해서는 하드웨어 난수 생성 알고리즘(HWRNG) 또는 양자 난수 생성 알고리즘(QRNG)을
+    // 사용해야 하나, 웹 클라이언트에서는 사용자 하드웨어에 접근이 불가능 하므로 암호학적으로 안전한 유사 난수 생성 알고리즘(CSPRNG)으로 갈음
+    let selection_cards = [];
+
+    let shuffle_counter = setInterval(() => {
+        let arr = crypto.getRandomValues(new Uint8Array(25));
+        for (let i = 0; i < arr.length; i++){
+            selection_cards.push(Math.round((arr[i] / 255.0) * 4));
+        }
+
+        if (selection_cards.length > 24){
+            shuffle_done = true;
+            clearInterval(shuffle_counter);
+            return;
+        }
+    }, 2000);
+
+    let selection_table = [];
+    let selectors = document.querySelector('.zenercards_selector_table').querySelectorAll('button');
+    let cells = document.querySelector('.zenercards_result_table').querySelectorAll('td');
+    let hitCount = 0;
+    
+    for (let i = 0; i < selectors.length; i++){
+        selectors[i].onclick = () => {
+            if (selection_table.length < 26){
+                selection_table.push(i);
+
+                for(let j = 0; j < selection_table.length; j++){
+                    cells[j].style.background = 'url(../resources/imges/Zener_Unk_Checked_Card.svg)';
+                    cells[j].style.backgroundSize = '100% 80%';
+                    cells[j].style.backgroundRepeat = 'no-repeat';
+                }
+
+                if (selection_table.length == 25){
+                    for (let k = 0; k < cells.length; k++){
+                        if (selection_cards[k] == selection_table[k]){
+                            cells[k].style.background = 'url(../resources/imges/Zener_' + getZenerCardNameFromIndex(selection_cards[k]) + '_OK_Card.svg)';
+                            hitCount++;
+                        }else{
+                            cells[k].style.background = 'url(../resources/imges/Zener_' + getZenerCardNameFromIndex(selection_cards[k]) + '_NO_Card.svg)';
+                        }
+
+                        cells[k].style.backgroundSize = '100% 80%';
+                        cells[k].style.backgroundRepeat = 'no-repeat';
+                    }
+
+                    document.querySelector('.zenercards_player').style.height = '450px';
+
+                    let retryBtn = document.querySelector('.zenercards_retry_button');
+                    let resultView = document.querySelector('.zenercards_result_view');
+                    resultView.textContent = '당신의 영(靈) 능력 가능성은 ' + Math.round((hitCount / 25.0) * 100) + '% 입니다.';
+                    resultView.style.display = 'block';
+
+                    retryBtn.style.display = 'block';
+                    retryBtn.onclick = () => {
+                        player.style.display = 'none';
+                        loading.style.display = 'none';
+                        intro.style.display = 'block';
+
+                        for(let j = 0; j < selection_table.length; j++){
+                            cells[j].style.background = 'url(../resources/imges/Zener_Unk_Card.svg)';
+                            cells[j].style.backgroundSize = '100% 80%';
+                            cells[j].style.backgroundRepeat = 'no-repeat';
+                        }
+
+                        resultView.textContent = '';
+                        resultView.style.display = 'none';
+                        retryBtn.style.display = 'none';
+                        document.querySelector('.zenercards_player').style.height = '';
+                    }
+                }
+            }
+        }
+    }
+    
+    requestAnimationFrame(anim_callback);
+}
 
 function onLoginClick(){
     //document.querySelector('.log_box1').style.display = 'none';

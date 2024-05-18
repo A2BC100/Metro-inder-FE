@@ -32,6 +32,10 @@ hr{
     border: 1px solid rgb(240, 240, 240);
 }
 
+footer{
+    margin-left: 32px;
+}
+
 /*---map----*/
 .map_box{
     width: 100%;
@@ -132,6 +136,92 @@ hr{
 }
 .search_box_wrap input:focus{
     outline: none;
+}
+/*---------zenercard_img-------*/
+.zenercards_box{
+    margin: 32px;
+}
+.zenercards_intro img{
+    width: 100%;
+}
+.zenercards_intro h4{
+    text-align: center;
+}
+.zenercards_intro button{
+    position: relative;
+    width: 248px;
+    height: 32px;
+    left: 50%;
+    top: 16px;
+    transform: translateX(-50%);
+    background: #3b8f69;
+    border-radius: 8px;
+    border: 2px solid dimgray;
+    color: white;
+}
+.zenercards_loading {
+    height: 240px;
+    display: none;
+}
+.zenercards_loading img{
+    position: relative;
+    width: 30%;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.zenercards_loading h4{
+    position: relative;
+    text-align: center;
+    top: 32px;
+}
+.zenercards_player{
+    display: none;
+}
+.zenercards_result_table{
+    position: relative;
+    top: 16px;
+    width: 240px;
+    height: 280px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.zenercards_result_table td{
+    background: url(../resources/imges/Zener_Unk_Card.svg);
+    background-size: 100% 80%;
+    background-repeat: no-repeat;
+}
+.zenercards_selector_table{
+    position: relative;
+    top: 16px;
+    width: 240px;
+    height: 72px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.zenercards_selector_table button{
+    width: 100%;
+    height: 100%;
+}
+.zenercards_result_view{
+    position: relative;
+    text-align: center;
+    top: 40px;
+    font-size: 14pt;
+    display: none;
+}
+.zenercards_retry_button{
+    position: relative;
+    width: 240px;
+    height: 32px;
+    left: 50%;
+    top: 48px;
+    transform: translateX(-50%);
+    background: #3b8f69;
+    border-radius: 8px;
+    border: 2px solid dimgray;
+    color: white;
+    display: none;
 }
 /*---------newsfed_img---------*/
 .newsfeed_box{
